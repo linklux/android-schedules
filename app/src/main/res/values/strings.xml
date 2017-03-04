@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Windesheim Schedules</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="nav_action_settings">Settings</string>
+    <string name="nav_action_add">Add schedule</string>
+    <string name="nav_action_refresh">Refresh schedules</string>
+
+    <string name="project_author">Leon Kolthoff</string>
+    <string name="project_links">linksoft.io | github.com/linklux</string>
+</resources>
