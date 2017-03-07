@@ -14,11 +14,9 @@ import io.linksoft.schedules.fragments.SchedulePagerFragment;
 public class SchedulePagerAdapter extends FragmentPagerAdapter {
 
     private Map<String, Schedule> schedules;
+
     private List<Schedule> activeSchedules = new ArrayList<>();
-
     private List<String> positionMap = new ArrayList<>();
-
-    private int items = 0;
 
     public SchedulePagerAdapter(FragmentManager fm, Map<String, Schedule> schedules) {
         super(fm);
@@ -30,7 +28,7 @@ public class SchedulePagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return items;
+        return activeSchedules.size();
     }
 
     @Override
@@ -39,30 +37,11 @@ public class SchedulePagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public int getItemPosition(Object object) {
-        SchedulePagerFragment fragment = (SchedulePagerFragment) object;
-
-        int position = positionMap.indexOf(fragment.getScheduleCode());
-
-        return position < 0 ? POSITION_NONE : position;
-    }
-
-    @Override
     public CharSequence getPageTitle(int position) {
-        if (schedules != null && position < schedules.size())
+        if (activeSchedules != null && position < activeSchedules.size())
             return getScheduleById(position).getCode();
 
         return "Unknown";
-    }
-
-    public void updateDataSet() {
-        items = 0;
-
-        for (Map.Entry<String, Schedule> s : this.schedules.entrySet())
-            if (s.getValue().isEnabled()) items++;
-
-        setPositionMap();
-        notifyDataSetChanged();
     }
 
     private Schedule getScheduleById(int position) {

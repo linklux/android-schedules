@@ -1,5 +1,6 @@
 package io.linksoft.schedules;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -29,6 +30,7 @@ import java.util.Map;
 import io.linksoft.schedules.adapters.SchedulePagerAdapter;
 import io.linksoft.schedules.data.Class;
 import io.linksoft.schedules.data.Schedule;
+import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.net.DownloadCompleteListener;
 import io.linksoft.schedules.util.NetUtil;
 import okhttp3.OkHttpClient;
@@ -40,9 +42,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar mToolbar;
     private ViewPager mPager;
 
+    private Settings settings;
+
+    private static final int ID_APPLY = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        settings = new Settings(this);
 
         setContentView(R.layout.activity_main);
 
@@ -60,6 +68,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
 
         registerSchedules();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        settings.save();
     }
 
     @Override
@@ -98,7 +113,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             shouldClose = false;
         } else if (id == R.id.schedules_refresh) {
             syncAllScheduleClasses();
+        } else if (id == ID_APPLY) {
+            reload();
         } else if (id == 0) {
+            shouldClose = false;
             if (!handleScheduleClick(item)) return false;
         }
 
@@ -120,22 +138,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void setPagerView() {
         if (mPager == null) {
             mPager = (ViewPager) findViewById(R.id.pager);
-            mPager.setOffscreenPageLimit(schedules.size() - 1);
+            mPager.setOffscreenPageLimit(schedules.size() / 2 + 1);
         }
 
         if (mPager.getAdapter() == null)
             mPager.setAdapter(new SchedulePagerAdapter(getSupportFragmentManager(), schedules));
-
-        ((SchedulePagerAdapter) mPager.getAdapter()).updateDataSet();
     }
 
     private void registerSchedules() {
-        schedules.put("ICTSE2a", new Schedule("ICTSE2a", true));
-        schedules.put("ICTSE2b", new Schedule("ICTSE2b", true));
-        schedules.put("ICTSE2c", new Schedule("ICTSE2c", true));
+        for (Schedule schedule : settings.getSchedules())
+            schedules.put(schedule.getCode(), schedule);
 
         Menu subMenu = ((NavigationView) findViewById(R.id.nav_view)).getMenu().addSubMenu("Current schedules");
-        int itemID = schedules.size() - 1;
+        int itemID = schedules.size();
+
+        MenuItem itemApply = subMenu.add(0, ID_APPLY, itemID--, "Apply changes");
+        itemApply.setIcon(R.drawable.ic_refresh);
 
         for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
             MenuItem item = subMenu.add(0, Menu.NONE, itemID--, entry.getValue().getCode());
@@ -145,9 +163,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         syncAllScheduleClasses();
     }
 
-    private void syncScheduleClasses(final Schedule schedule) {
-        if (!NetUtil.hasNetworkConnection(this)) return;
-        if (schedule.isSynced()) return;
+    private boolean syncScheduleClasses(final Schedule schedule) {
+        System.out.println("Syncing " + schedule.getCode());
+
+        if (!NetUtil.hasNetworkConnection(this)) return false;
+        if (schedule.isSynced()) return false;
 
         String url = "http://api.windesheim.nl/api/klas/" + schedule.getCode() + "/les";
         OkHttpClient client = new OkHttpClient();
@@ -174,6 +194,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 });
             }
         });
+
+        return true;
     }
 
     private void syncAllScheduleClasses() {
@@ -212,16 +234,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         schedule.setEnabled(!schedule.isEnabled());
         item.setIcon(schedule.getToggleIcon());
 
-        if (schedule.isEnabled() && schedule.getClasses().isEmpty()) {
-            syncScheduleClasses(schedule);
-        } else if (schedule.isEnabled()) {
-            mToolbar.setTitle(schedule.getCode());
-        }
+        settings.writeSchedule(schedule);
+        settings.save();
 
-        setPagerView();
         refreshMenu();
 
         return true;
+    }
+
+    private void reload() {
+        Intent intent = getIntent();
+
+        finish();
+        startActivity(intent);
     }
 
     private void refreshMenu() {
