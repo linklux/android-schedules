@@ -135,10 +135,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         schedules.put("ICTSE2c", new Schedule("ICTSE2c", true));
 
         Menu subMenu = ((NavigationView) findViewById(R.id.nav_view)).getMenu().addSubMenu("Current schedules");
-        int itemID = Integer.MAX_VALUE;
+        int itemID = schedules.size() - 1;
 
         for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
-            MenuItem item = subMenu.add(Menu.NONE, Menu.NONE, itemID--, entry.getValue().getCode());
+            MenuItem item = subMenu.add(0, Menu.NONE, itemID--, entry.getValue().getCode());
             item.setIcon(entry.getValue().getToggleIcon());
         }
 
