@@ -7,13 +7,14 @@ import io.linksoft.schedules.R;
 public class Schedule {
 
     private String code;
-    private boolean enabled;
+    private boolean enabled, synced;
 
     private ArrayList<Class> classes = new ArrayList<>();
 
     public Schedule(String code, boolean enabled) {
         this.code = code;
         this.enabled = enabled;
+        this.synced = false;
     }
 
     public int getToggleIcon() {
@@ -32,12 +33,25 @@ public class Schedule {
         this.enabled = enabled;
     }
 
+    public boolean isSynced() {
+        return synced;
+    }
+
+    public void setSynced(boolean synced) {
+        this.synced = synced;
+    }
+
     public ArrayList<Class> getClasses() {
         return classes;
     }
 
     public void setClasses(ArrayList<Class> classes) {
         this.classes = classes;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, classes: %s, enabled: %b, synced: %b", code, classes.size(), enabled, synced);
     }
 
 }

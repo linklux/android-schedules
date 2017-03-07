@@ -11,6 +11,8 @@
     tools:context="io.linksoft.schedules.MainActivity"
     tools:showIn="@layout/activity_main">
 
+    <include layout="@layout/fragment_pager"/>
+
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"

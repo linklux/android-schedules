@@ -37,8 +37,8 @@ public class Class implements Parcelable {
         this.tutors = tutors;
     }
 
-    Class(Parcel in) {
-        String[] data = new String[2];
+    private Class(Parcel in) {
+        String[] data = new String[8];
         in.readStringArray(data);
 
         this.id = data[0];
