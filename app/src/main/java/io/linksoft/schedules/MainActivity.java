@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Settings settings;
 
     private static final int ID_APPLY = 1;
+    private static final int ID_REMOVE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             syncAllScheduleClasses();
         } else if (id == ID_APPLY) {
             reload();
+        } else if (id == ID_REMOVE) {
+            removeInactiveSchedules();
         } else if (id == 0) {
             shouldClose = false;
             if (!handleScheduleClick(item)) return false;
@@ -159,10 +162,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             schedules.put(schedule.getCode(), schedule);
 
         Menu subMenu = ((NavigationView) findViewById(R.id.nav_view)).getMenu().addSubMenu("Current schedules");
-        int itemID = schedules.size();
+        int itemID = schedules.size() + 1;
 
-        MenuItem itemApply = subMenu.add(0, ID_APPLY, itemID--, "Apply changes");
-        itemApply.setIcon(R.drawable.ic_refresh);
+        MenuItem itemRemove = subMenu.add(0, ID_REMOVE, itemID--, "Remove inactive");
+        itemRemove.setIcon(R.drawable.ic_delete);
+
+        MenuItem itemApply = subMenu.add(0, ID_APPLY, itemID--, "Save changes");
+        itemApply.setIcon(R.drawable.ic_save);
 
         for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
             MenuItem item = subMenu.add(0, Menu.NONE, itemID--, entry.getValue().getCode());
@@ -170,6 +176,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         syncAllScheduleClasses();
+    }
+
+    private void removeInactiveSchedules() {
+        for (Map.Entry<String, Schedule> entry : schedules.entrySet())
+            if (!entry.getValue().isEnabled())
+                settings.removeSchedule(entry.getValue());
+
+        settings.save();
+
+        reload();
     }
 
     private boolean syncScheduleClasses(final Schedule schedule) {
