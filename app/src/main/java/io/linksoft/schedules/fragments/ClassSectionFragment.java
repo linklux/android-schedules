@@ -44,7 +44,7 @@ public class ClassSectionFragment extends Fragment {
         String curDay = DateUtil.getScheduleDay(mClasses.get(0).getTimeStart());
 
         int i = 0;
-        while (mClasses.get(i).getTimeStart().before(dateLimit)) {
+        while (i < mClasses.size() - 1 && mClasses.get(i).getTimeStart().before(dateLimit)) {
             Class cls = mClasses.get(i);
             String day = DateUtil.getScheduleDay(cls.getTimeStart());
 

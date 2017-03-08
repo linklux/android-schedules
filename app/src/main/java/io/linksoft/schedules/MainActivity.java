@@ -1,5 +1,7 @@
 package io.linksoft.schedules;
 
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -31,11 +33,13 @@ import io.linksoft.schedules.adapters.SchedulePagerAdapter;
 import io.linksoft.schedules.data.Class;
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
+import io.linksoft.schedules.fragments.AddDialogFragment;
 import io.linksoft.schedules.net.DownloadCompleteListener;
 import io.linksoft.schedules.util.NetUtil;
 import okhttp3.OkHttpClient;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DownloadCompleteListener {
+// TODO Clean up this class, it's a mess...
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AddDialogFragment.OnScheduleAddListener, DownloadCompleteListener {
 
     private HashMap<String, Schedule> schedules = new HashMap<>();
 
@@ -108,9 +112,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         boolean shouldClose = true;
 
         if (id == R.id.schedule_add) {
-            Toast.makeText(getApplicationContext(), "Requested action not yet implemented", Toast.LENGTH_SHORT).show();
+            showDialog();
 
-            shouldClose = false;
+            shouldClose = true;
         } else if (id == R.id.schedules_refresh) {
             syncAllScheduleClasses();
         } else if (id == ID_APPLY) {
@@ -124,6 +128,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
 
         return true;
+    }
+
+    @Override
+    public void onScheduleAdded(@NonNull String code) {
+        addScheduleIfExists(code);
     }
 
     @Override
@@ -164,8 +173,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private boolean syncScheduleClasses(final Schedule schedule) {
-        System.out.println("Syncing " + schedule.getCode());
-
         if (!NetUtil.hasNetworkConnection(this)) return false;
         if (schedule.isSynced()) return false;
 
@@ -185,11 +192,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 MainActivity.this.runOnUiThread(new Runnable() {
                     public void run() {
-                        try {
-                            downloadComplete(schedule, stringToClassArray(result));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        downloadComplete(schedule, stringToClassArray(result));
+                    }
+                });
+            }
+        });
+
+        return true;
+    }
+
+    private boolean addScheduleIfExists(final String code) {
+        if (!NetUtil.hasNetworkConnection(this)) return false;
+
+        String url = "http://api.windesheim.nl/api/klas/" + code + "/les";
+        OkHttpClient client = new OkHttpClient();
+        okhttp3.Request request = new okhttp3.Request.Builder().url(url).build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
+                final String result = response.body().string();
+
+                MainActivity.this.runOnUiThread(new Runnable() {
+                    public void run() {
+                        if (schedules.containsKey(code)) {
+                            Toast.makeText(getApplicationContext(), "Schedule already exists.", Toast.LENGTH_SHORT).show();
+                            return;
                         }
+
+                        if (result.equals("[]")) {
+                            Toast.makeText(getApplicationContext(), "Couldn't find a schedule by that name.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        Schedule schedule = new Schedule(code, true);
+
+                        settings.writeSchedule(schedule);
+                        settings.save();
+
+                        reload();
                     }
                 });
             }
@@ -264,20 +310,38 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    private ArrayList<Class> stringToClassArray(String json) throws JSONException {
+    private ArrayList<Class> stringToClassArray(String json) {
         if (json == null) return new ArrayList<>();
 
-        JSONArray jsonArray = new JSONArray(json);
+        JSONArray jsonArray;
         ArrayList<Class> classes = new ArrayList<>();
+        try {
+            jsonArray = new JSONArray(json);
 
-        for (int i = 0; i < jsonArray.length(); i++) {
-            JSONObject obj = jsonArray.getJSONObject(i);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject obj = jsonArray.getJSONObject(i);
 
-            if (obj != null)
-                classes.add(new Class(obj));
+                if (obj != null)
+                    classes.add(new Class(obj));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         return classes;
     }
 
+    private void showDialog() {
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
+
+        if (prev != null)
+            ft.remove(prev);
+
+        ft.addToBackStack(null);
+
+        AddDialogFragment addDialog = AddDialogFragment.newInstance();
+        addDialog.setOnScheduleAddSubmitListener(this);
+        addDialog.show(ft, "dialog");
+    }
 }

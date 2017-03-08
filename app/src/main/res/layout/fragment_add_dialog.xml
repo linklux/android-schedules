@@ -1,0 +1,51 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorLight"
+    android:padding="@dimen/text_margin"
+    tools:context="io.linksoft.schedules.fragments.AddDialogFragment">
+
+    <TextView
+        android:id="@+id/add_dialog_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/text_margin"
+        android:text="Add a schedule"
+        android:textColor="@color/colorDark"
+        android:textSize="14dp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/add_dialog_subheader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_dialog_header"
+        android:layout_marginBottom="@dimen/text_margin"
+        android:text="Validation is partially implemented, auto-complete has yet to come. Please be sure to spell it correctly (capitalization matters!)"
+        android:textColor="@color/colorDark"/>
+
+    <EditText
+        android:id="@+id/add_dialog_class"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/add_dialog_subheader"
+        android:backgroundTint="@color/colorPrimary"
+        android:hint="Class code"
+        android:inputType="text"
+        android:padding="10dp"
+        android:textColor="@color/colorDark"/>
+
+    <Button
+        android:id="@+id/add_dialog_submit"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/add_dialog_class"
+        android:layout_marginTop="@dimen/text_margin"
+        android:text="Add schedule"
+        android:textColor="@color/colorPrimary"/>
+
+</RelativeLayout>
