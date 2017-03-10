@@ -7,6 +7,8 @@
     <string name="nav_action_settings">Settings</string>
     <string name="nav_action_add">Add schedule</string>
     <string name="nav_action_refresh">Refresh schedules</string>
+    <string name="nav_action_save">Save changes</string>
+    <string name="nav_action_remove">Remove inactive</string>
 
     <string name="project_author">Leon Kolthoff</string>
     <string name="project_links">linksoft.io | github.com/linklux</string>

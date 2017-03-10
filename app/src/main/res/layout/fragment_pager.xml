@@ -5,22 +5,29 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/refresh_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
+        android:layout_height="wrap_content">
 
-        <android.support.v4.view.PagerTitleStrip
-            android:id="@+id/pager_title_strip"
+        <android.support.v4.view.ViewPager
+            android:id="@+id/pager"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:background="@color/colorDark"
-            android:textColor="@color/colorLight"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-    </android.support.v4.view.ViewPager>
+            <android.support.v4.view.PagerTitleStrip
+                android:id="@+id/pager_title_strip"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:background="@color/colorDark"
+                android:paddingBottom="4dp"
+                android:paddingTop="4dp"
+                android:textColor="@color/colorLight"/>
+
+        </android.support.v4.view.ViewPager>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
 
 </LinearLayout>

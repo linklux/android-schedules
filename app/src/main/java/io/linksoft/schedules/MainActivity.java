@@ -9,6 +9,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -39,17 +40,15 @@ import io.linksoft.schedules.util.NetUtil;
 import okhttp3.OkHttpClient;
 
 // TODO Clean up this class, it's a mess...
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AddDialogFragment.OnScheduleAddListener, DownloadCompleteListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, AddDialogFragment.OnScheduleAddListener, SwipeRefreshLayout.OnRefreshListener, DownloadCompleteListener {
 
     private HashMap<String, Schedule> schedules = new HashMap<>();
 
     private Toolbar mToolbar;
     private ViewPager mPager;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     private Settings settings;
-
-    private static final int ID_APPLY = 1;
-    private static final int ID_REMOVE = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +68,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        ((NavigationView) findViewById(R.id.nav_view)).setNavigationItemSelectedListener(this);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         registerSchedules();
     }
@@ -114,13 +115,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (id == R.id.schedule_add) {
             showDialog();
-
-            shouldClose = true;
-        } else if (id == R.id.schedules_refresh) {
-            syncAllScheduleClasses();
-        } else if (id == ID_APPLY) {
+        } else if (id == R.id.schedule_save) {
             reload();
-        } else if (id == ID_REMOVE) {
+        } else if (id == R.id.schedules_remove) {
             removeInactiveSchedules();
         } else if (id == 0) {
             shouldClose = false;
@@ -147,6 +144,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (allSchedulesSynced()) setPagerView();
     }
 
+    @Override
+    public void onRefresh() {
+        syncAllScheduleClasses();
+
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
+
     private void setPagerView() {
         if (mPager == null) {
             mPager = (ViewPager) findViewById(R.id.pager);
@@ -162,13 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             schedules.put(schedule.getCode(), schedule);
 
         Menu subMenu = ((NavigationView) findViewById(R.id.nav_view)).getMenu().addSubMenu("Current schedules");
-        int itemID = schedules.size() + 1;
-
-        MenuItem itemRemove = subMenu.add(0, ID_REMOVE, itemID--, "Remove inactive");
-        itemRemove.setIcon(R.drawable.ic_delete);
-
-        MenuItem itemApply = subMenu.add(0, ID_APPLY, itemID--, "Save changes");
-        itemApply.setIcon(R.drawable.ic_save);
+        int itemID = schedules.size() - 1;
 
         for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
             MenuItem item = subMenu.add(0, Menu.NONE, itemID--, entry.getValue().getCode());

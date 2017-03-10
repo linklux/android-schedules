@@ -6,8 +6,12 @@
         android:icon="@drawable/ic_add"
         android:title="@string/nav_action_add"/>
     <item
-        android:id="@+id/schedules_refresh"
-        android:icon="@drawable/ic_refresh"
-        android:title="@string/nav_action_refresh"/>
+        android:id="@+id/schedule_save"
+        android:icon="@drawable/ic_save"
+        android:title="@string/nav_action_save"/>
+    <item
+        android:id="@+id/schedules_remove"
+        android:icon="@drawable/ic_delete"
+        android:title="@string/nav_action_remove"/>
 
 </menu>
