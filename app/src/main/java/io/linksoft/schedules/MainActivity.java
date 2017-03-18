@@ -21,25 +21,40 @@ import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.Map;
 
-import io.linksoft.schedules.adapters.SchedulePagerAdapter;
+import io.linksoft.schedules.adapters.DayViewPagerAdapter;
+import io.linksoft.schedules.adapters.ScheduleViewPagerAdapter;
+import io.linksoft.schedules.adapters.ViewPagerAdapter;
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.fragments.AddDialogFragment;
+import io.linksoft.schedules.fragments.DayViewPagerFragment;
 import io.linksoft.schedules.net.WindesheimApi;
+import io.linksoft.schedules.util.DateUtil;
 import io.linksoft.schedules.util.SchedulesUtil;
 
+@SuppressWarnings("ConstantConditions")
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AddDialogFragment.OnScheduleAddListener, SwipeRefreshLayout.OnRefreshListener, WindesheimApi.WindesheimApiListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AddDialogFragment.OnScheduleAddListener, SwipeRefreshLayout.OnRefreshListener, WindesheimApi.WindesheimApiListener, ViewPager.OnPageChangeListener {
+
+    // TODO Not hardcode views, reflection might be an option
+    private static final int VIEW_DAY = 1;
+    private static final int VIEW_SCHEDULE = 2;
+
+    private int activeView;
 
     private ViewPager mPager;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
+    private ViewPagerAdapter pagerAdapter;
+
     private Settings settings;
     private WindesheimApi api;
 
-    private SchedulesUtil schedules = new SchedulesUtil();
+    private SchedulesUtil schedules;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +62,7 @@ public class MainActivity extends AppCompatActivity
 
         settings = new Settings(this);
         api = new WindesheimApi(this, this);
+        schedules = new SchedulesUtil(this, api);
 
         setContentView(R.layout.activity_main);
 
@@ -64,6 +80,9 @@ public class MainActivity extends AppCompatActivity
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
+
+        String viewSetting = settings.getOption("view");
+        activeView = viewSetting.isEmpty() ? VIEW_DAY : Integer.parseInt(viewSetting);
 
         registerSchedules();
     }
@@ -105,6 +124,11 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.schedules_remove) {
             schedules.removeInactive(settings);
             reload();
+        } else if (id == R.id.toggle_view) {
+            settings.writeOption("view", String.valueOf((activeView == VIEW_DAY ? VIEW_SCHEDULE : VIEW_DAY)));
+            settings.save();
+
+            reload();
         } else if (id == 0) {
             shouldClose = false;
             if (!handleScheduleClick(item)) return false;
@@ -123,7 +147,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRefresh() {
-        schedules.syncAll(api);
+        schedules.syncAll();
     }
 
     @Override
@@ -143,6 +167,10 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onScheduleSynced(Schedule schedule) {
+        schedules.writeToCache(schedule.getCode());
+        settings.writeSchedule(schedule);
+        settings.save();
+
         if (schedules.isAllSynced()) {
             if (mSwipeRefreshLayout.isRefreshing())
                 mSwipeRefreshLayout.setRefreshing(false);
@@ -151,19 +179,51 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void setPagerView() {
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        if (activeView != VIEW_DAY) return;
+        Date date = ((DayViewPagerFragment) pagerAdapter.getItem(position)).getDay().getDate();
+
+        getSupportActionBar().setTitle(DateUtil.getFormattedTime(date, DateFormat.LONG));
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    public void setPagerView() {
         if (mPager == null) {
             mPager = (ViewPager) findViewById(R.id.pager);
-            mPager.setOffscreenPageLimit(schedules.size() / 2 + 1);
+
+            mPager.addOnPageChangeListener(this);
         }
 
-        if (mPager.getAdapter() == null)
-            mPager.setAdapter(new SchedulePagerAdapter(getSupportFragmentManager(), schedules.get()));
+        if (mPager.getAdapter() == null) {
+            if (activeView == VIEW_DAY) {
+                pagerAdapter = new DayViewPagerAdapter(getSupportFragmentManager(), schedules.get());
+            } else if (activeView == VIEW_SCHEDULE) {
+                pagerAdapter = new ScheduleViewPagerAdapter(getSupportFragmentManager(), schedules.get());
+            }
+
+            mPager.setAdapter(pagerAdapter);
+
+            if (activeView != VIEW_DAY) return;
+            Date curDate = DateUtil.getStartOfDay(new Date());
+            curDate = DateUtil.isWeekend(curDate) ? DateUtil.getWeekStart(curDate, 1) : curDate;
+
+            mPager.setCurrentItem(pagerAdapter.getItemPosition(curDate));
+            getSupportActionBar().setTitle(DateUtil.getFormattedTime(curDate, DateFormat.LONG));
+        } else {
+            pagerAdapter.notifyDataSetChanged();
+        }
     }
 
     private void registerSchedules() {
-        for (Schedule schedule : settings.getSchedules())
-            schedules.add(schedule);
+        schedules.set(settings.getSchedules());
 
         Menu subMenu = ((NavigationView) findViewById(R.id.nav_view)).getMenu().addSubMenu("Current schedules");
         int itemID = schedules.size() - 1;
@@ -172,8 +232,6 @@ public class MainActivity extends AppCompatActivity
             MenuItem item = subMenu.add(0, Menu.NONE, itemID--, entry.getValue().getCode());
             item.setIcon(entry.getValue().getToggleIcon());
         }
-
-        schedules.syncAll(api);
     }
 
     private boolean handleScheduleClick(MenuItem item) {

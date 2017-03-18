@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Date;
+
 import io.linksoft.schedules.util.FileUtil;
 
 public class Settings {
@@ -61,7 +63,7 @@ public class Settings {
                 }
             }
 
-            schedule = new Schedule(obj.getString("code"), obj.getBoolean("enabled"));
+            schedule = new Schedule(obj.getString("code"), obj.getBoolean("enabled"), new Date(obj.getLong("syncTime")));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -119,6 +121,7 @@ public class Settings {
             JSONObject json = new JSONObject();
             json.put("code", schedule.getCode());
             json.put("enabled", schedule.isEnabled());
+            json.put("syncTime", schedule.getSyncTime().getTime());
 
             settings.getJSONArray("schedules").put(index, json);
         } catch (JSONException e) {

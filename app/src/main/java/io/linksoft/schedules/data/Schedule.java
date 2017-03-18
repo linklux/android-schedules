@@ -1,6 +1,7 @@
 package io.linksoft.schedules.data;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import io.linksoft.schedules.R;
 
@@ -9,12 +10,20 @@ public class Schedule {
     private String code;
     private boolean enabled, synced;
 
+    private Date syncTime;
+
     private ArrayList<Class> classes = new ArrayList<>();
 
-    public Schedule(String code, boolean enabled) {
+    public Schedule(String code, boolean enabled, Date syncTime) {
         this.code = code;
         this.enabled = enabled;
-        this.synced = false;
+        this.syncTime = syncTime;
+
+        synced = false;
+    }
+
+    public Schedule(String code, boolean enabled) {
+        this(code, enabled, new Date());
     }
 
     public int getToggleIcon() {
@@ -39,6 +48,14 @@ public class Schedule {
 
     public void setSynced(boolean synced) {
         this.synced = synced;
+    }
+
+    public Date getSyncTime() {
+        return syncTime;
+    }
+
+    public void setSyncTime(Date syncTime) {
+        this.syncTime = syncTime;
     }
 
     public ArrayList<Class> getClasses() {

@@ -2,46 +2,22 @@ package io.linksoft.schedules.adapters;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import io.linksoft.schedules.data.Schedule;
-import io.linksoft.schedules.fragments.SchedulePagerFragment;
+import io.linksoft.schedules.fragments.ScheduleViewPagerFragment;
 
-public class SchedulePagerAdapter extends FragmentPagerAdapter {
+public class ScheduleViewPagerAdapter extends ViewPagerAdapter {
 
-    private Map<String, Schedule> schedules;
-
-    private List<Schedule> activeSchedules = new ArrayList<>();
     private List<String> positionMap = new ArrayList<>();
 
-    public SchedulePagerAdapter(FragmentManager fm, Map<String, Schedule> schedules) {
-        super(fm);
-
-        this.schedules = schedules;
+    public ScheduleViewPagerAdapter(FragmentManager fm, Map<String, Schedule> schedules) {
+        super(fm, schedules);
 
         setPositionMap();
-    }
-
-    @Override
-    public int getCount() {
-        return activeSchedules.size();
-    }
-
-    @Override
-    public Fragment getItem(int position) {
-        return SchedulePagerFragment.newInstance(getScheduleById(position), position);
-    }
-
-    @Override
-    public CharSequence getPageTitle(int position) {
-        if (activeSchedules != null && position < activeSchedules.size())
-            return getScheduleById(position).getCode();
-
-        return "Unknown";
     }
 
     private Schedule getScheduleById(int position) {
@@ -62,6 +38,24 @@ public class SchedulePagerAdapter extends FragmentPagerAdapter {
             activeSchedules.add(i, schedule.getValue());
             positionMap.add(i++, schedule.getKey());
         }
+    }
+
+    @Override
+    public int getCount() {
+        return activeSchedules.size();
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+        return ScheduleViewPagerFragment.newInstance(getScheduleById(position), position);
+    }
+
+    @Override
+    public CharSequence getPageTitle(int position) {
+        if (activeSchedules != null && position < activeSchedules.size())
+            return getScheduleById(position).getCode();
+
+        return "Unknown";
     }
 
 }

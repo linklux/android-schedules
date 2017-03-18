@@ -9,61 +9,62 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 import io.linksoft.schedules.R;
 import io.linksoft.schedules.data.Class;
+import io.linksoft.schedules.data.DaySchedulesContainer;
 import io.linksoft.schedules.sections.ClassSection;
-import io.linksoft.schedules.util.DateUtil;
 
-public class ClassSectionFragment extends Fragment {
+public class DayViewPagerFragment extends Fragment {
 
-    protected static final String ARG_CLASSES = "classes";
+    private static final String ARG_POSITION = "position";
+    private static final String ARG_DAY = "day";
 
-    protected List<Class> mClasses;
+    protected DaySchedulesContainer day;
+
+    public static DayViewPagerFragment newInstance(DaySchedulesContainer day, int position) {
+        DayViewPagerFragment fragment = new DayViewPagerFragment();
+        Bundle args = new Bundle();
+
+        args.putInt(ARG_POSITION, position);
+        args.putParcelable(ARG_DAY, day);
+        fragment.setArguments(args);
+
+        fragment.day = day;
+
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null)
-            mClasses = getArguments().getParcelableArrayList(ARG_CLASSES);
+            day = getArguments().getParcelable(ARG_DAY);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pager_schedules, container, false);
-        if (mClasses.isEmpty()) return view;
+        if (day.getSchedules().isEmpty()) return view;
 
         SectionedRecyclerViewAdapter sectionAdapter = new SectionedRecyclerViewAdapter();
-        List<Class> classes = new ArrayList<>();
 
-        Date dateLimit = DateUtil.getWeekStart(mClasses.get(0).getTimeStart(), 2);
-        String curDay = DateUtil.getScheduleDay(mClasses.get(0).getTimeStart());
-
-        int i = 0;
-        while (i < mClasses.size() - 1 && mClasses.get(i).getTimeStart().before(dateLimit)) {
-            Class cls = mClasses.get(i);
-            String day = DateUtil.getScheduleDay(cls.getTimeStart());
-
-            if (!day.equals(curDay)) {
-                sectionAdapter.addSection(new ClassSection(curDay, new ArrayList<>(classes)));
-                classes.clear();
-
-                curDay = day;
-            }
-
-            classes.add(cls);
-            i++;
-        }
+        for (Map.Entry<String, List<Class>> entry : day.getSchedules().entrySet())
+            sectionAdapter.addSection(new ClassSection(entry.getKey(), new ArrayList<>(entry.getValue())));
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(sectionAdapter);
 
         return view;
+    }
+
+    public DaySchedulesContainer getDay() {
+        return day;
     }
 
 }

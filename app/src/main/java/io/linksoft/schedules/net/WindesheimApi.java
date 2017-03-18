@@ -3,6 +3,7 @@ package io.linksoft.schedules.net;
 import android.app.Activity;
 
 import java.io.IOException;
+import java.util.Date;
 
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.util.JSONUtil;
@@ -39,6 +40,7 @@ public class WindesheimApi {
                     public void run() {
                         schedule.setClasses(JSONUtil.stringToClassList(result));
                         schedule.setSynced(true);
+                        schedule.setSyncTime(new Date());
 
                         listener.onScheduleSynced(schedule);
                     }
@@ -47,7 +49,7 @@ public class WindesheimApi {
         });
     }
 
-    public boolean validateScheduleCode(final String code) {
+    public void validateScheduleCode(final String code) {
         makeRequest(getUrl(EP_CLASS, code), new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
@@ -66,8 +68,6 @@ public class WindesheimApi {
                 });
             }
         });
-
-        return true;
     }
 
     private boolean makeRequest(String url, okhttp3.Callback callback) {

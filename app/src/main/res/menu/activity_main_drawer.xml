@@ -13,5 +13,9 @@
         android:id="@+id/schedules_remove"
         android:icon="@drawable/ic_delete"
         android:title="@string/nav_action_remove"/>
+    <item
+        android:id="@+id/toggle_view"
+        android:icon="@drawable/ic_toggle_view"
+        android:title="@string/nav_action_toggle"/>
 
 </menu>

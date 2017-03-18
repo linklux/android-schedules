@@ -9,6 +9,7 @@
     <string name="nav_action_refresh">Refresh schedules</string>
     <string name="nav_action_save">Save changes</string>
     <string name="nav_action_remove">Remove inactive</string>
+    <string name="nav_action_toggle">Toggle view</string>
 
     <string name="project_author">Leon Kolthoff</string>
     <string name="project_links">linksoft.io | github.com/linklux</string>
