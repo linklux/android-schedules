@@ -23,7 +23,7 @@ public class Schedule {
     }
 
     public Schedule(String code, boolean enabled) {
-        this(code, enabled, new Date());
+        this(code, enabled, new Date(0));
     }
 
     public int getToggleIcon() {
