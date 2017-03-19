@@ -26,7 +26,7 @@ public class ClassSection extends StatelessSection {
 
     @Override
     public int getContentItemsTotal() {
-        return classes.size();
+        return classes.size() != 0 ? classes.size() : 1;
     }
 
     @Override
@@ -37,6 +37,14 @@ public class ClassSection extends StatelessSection {
     @Override
     public void onBindItemViewHolder(RecyclerView.ViewHolder holder, int position) {
         final ClassItemViewHolder itemHolder = (ClassItemViewHolder) holder;
+
+        if (classes.isEmpty()) {
+            itemHolder.timeFrame.setText(R.string.no_schedules);
+            itemHolder.location.setText(R.string.cheering);
+            itemHolder.name.setVisibility(View.GONE);
+
+            return;
+        }
 
         Class cls = classes.get(position);
 
