@@ -148,6 +148,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRefresh() {
+        if (schedules.getActiveSchedules() == 0)
+            mSwipeRefreshLayout.setRefreshing(false);
+
         schedules.syncAll();
     }
 

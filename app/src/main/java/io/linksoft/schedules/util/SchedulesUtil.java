@@ -115,4 +115,13 @@ public class SchedulesUtil {
         return cache.clear();
     }
 
+    public int getActiveSchedules() {
+        int count = 0;
+
+        for (Map.Entry<String, Schedule> s : schedules.entrySet())
+            if (s.getValue().isEnabled()) count++;
+
+        return count;
+    }
+
 }
