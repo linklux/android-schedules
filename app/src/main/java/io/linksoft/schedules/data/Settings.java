@@ -27,7 +27,11 @@ public class Settings {
 
     private boolean load() {
         try {
-            settings = new JSONObject(FileUtil.readFile(activity, FILE_NAME));
+            if (FileUtil.fileExists(activity, FILE_NAME, FileUtil.TYPE_NORMAL)) {
+                settings = new JSONObject(FileUtil.readFile(activity, FILE_NAME));
+            } else {
+                settings = new JSONObject();
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
