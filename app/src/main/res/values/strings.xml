@@ -11,12 +11,9 @@
     <string name="nav_action_remove">Remove inactive</string>
     <string name="nav_action_toggle">Toggle view</string>
 
-    <string name="project_author">Leon Kolthoff</string>
-    <string name="project_links">linksoft.io | github.com/linklux</string>
+    <string name="project_author" translatable="false">Leon Kolthoff</string>
+    <string name="project_links" translatable="false">linksoft.io | github.com/linklux</string>
 
     <string name="no_schedules">No classes found today</string>
-    <string name="cheering">\\o/</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="cheering" translatable="false">\\o/</string>
 </resources>

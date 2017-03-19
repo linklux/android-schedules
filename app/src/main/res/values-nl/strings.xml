@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Windesheim Roosters</string>
+    <string name="nav_action_add">Rooster toevoegen</string>
+    <string name="nav_action_refresh">Roosters verversen</string>
+    <string name="nav_action_remove">Verwijder uitgeschakelde</string>
+    <string name="nav_action_save">Veranderingen opslaan</string>
+    <string name="nav_action_settings">Instellingen</string>
+    <string name="nav_action_toggle">Toggle weergave</string>
+    <string name="navigation_drawer_close">Sluit navigatie</string>
+    <string name="navigation_drawer_open">Open navigatie</string>
+    <string name="no_schedules">Geen lessen gevonden vandaag</string>
+</resources>
