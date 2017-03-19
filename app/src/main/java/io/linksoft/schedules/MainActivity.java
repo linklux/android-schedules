@@ -32,6 +32,7 @@ import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.fragments.AddDialogFragment;
 import io.linksoft.schedules.fragments.DayViewPagerFragment;
+import io.linksoft.schedules.layouts.CustomSwipeRefreshLayout;
 import io.linksoft.schedules.net.WindesheimApi;
 import io.linksoft.schedules.util.DateUtil;
 import io.linksoft.schedules.util.SchedulesUtil;
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity
     private int activeView;
 
     private ViewPager mPager;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private CustomSwipeRefreshLayout mSwipeRefreshLayout;
 
     private ViewPagerAdapter pagerAdapter;
 
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity
 
         ((NavigationView) findViewById(R.id.nav_view)).setNavigationItemSelectedListener(this);
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_layout);
+        mSwipeRefreshLayout = (CustomSwipeRefreshLayout) findViewById(R.id.refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
         String viewSetting = settings.getOption("view");
