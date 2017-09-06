@@ -49,7 +49,7 @@ public class SchedulesUtil {
 
     public Schedule get(String code) {
         if (!has(code))
-            return new Schedule("Unknown: " + code, true);
+            return new Schedule("Unknown: " + code, "", true);
 
         return schedules.get(code);
     }

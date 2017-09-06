@@ -49,8 +49,8 @@ public class WindesheimApi {
         });
     }
 
-    public void validateScheduleCode(final String code) {
-        makeRequest(getUrl(EP_CLASS, code), new okhttp3.Callback() {
+    public void validateSchedule(final Schedule schedule) {
+        makeRequest(getUrl(EP_CLASS, schedule.getCode()), new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
                 e.printStackTrace();
@@ -63,7 +63,7 @@ public class WindesheimApi {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onScheduleCodeValidated(code, !result.equals("[]"));
+                        listener.onScheduleCodeValidated(schedule, !result.equals("[]"));
                     }
                 });
             }
@@ -90,7 +90,7 @@ public class WindesheimApi {
 
     public interface WindesheimApiListener {
 
-        void onScheduleCodeValidated(String code, boolean exists);
+        void onScheduleCodeValidated(Schedule schedule, boolean exists);
 
         void onScheduleSynced(Schedule schedule);
 

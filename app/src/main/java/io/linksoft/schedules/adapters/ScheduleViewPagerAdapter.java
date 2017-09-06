@@ -22,7 +22,7 @@ public class ScheduleViewPagerAdapter extends ViewPagerAdapter {
 
     private Schedule getScheduleById(int position) {
         if (positionMap.get(position) == null)
-            return new Schedule("Unknown", false);
+            return new Schedule("Unknown", "", false);
 
         return activeSchedules.get(position);
     }
@@ -53,7 +53,7 @@ public class ScheduleViewPagerAdapter extends ViewPagerAdapter {
     @Override
     public CharSequence getPageTitle(int position) {
         if (activeSchedules != null && position < activeSchedules.size())
-            return getScheduleById(position).getCode();
+            return getScheduleById(position).getFullName();
 
         return "Unknown";
     }

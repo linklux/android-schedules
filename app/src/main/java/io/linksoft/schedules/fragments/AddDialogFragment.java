@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import io.linksoft.schedules.R;
+import io.linksoft.schedules.data.Schedule;
 
 public class AddDialogFragment extends DialogFragment {
 
@@ -32,15 +33,23 @@ public class AddDialogFragment extends DialogFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_add_dialog, container, false);
-        final EditText text = (EditText) v.findViewById(R.id.add_dialog_class);
+
+        final EditText code = (EditText) v.findViewById(R.id.add_dialog_class);
+        final EditText label = (EditText) v.findViewById(R.id.add_dialog_label);
         final Button button = (Button) v.findViewById(R.id.add_dialog_submit);
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                if (text == null || listener == null) return;
-                if (text.getText().toString().isEmpty()) return;
+                if (code == null || listener == null) return;
+                if (code.getText().toString().isEmpty()) return;
 
-                listener.onScheduleAdded(text.getText().toString());
+                Schedule schedule = new Schedule(
+                    code.getText().toString(),
+                    label.getText().toString(),
+                    true
+                );
+
+                listener.onScheduleAdded(schedule);
             }
         });
 
@@ -53,7 +62,7 @@ public class AddDialogFragment extends DialogFragment {
 
     public interface OnScheduleAddListener {
 
-        void onScheduleAdded(@NonNull String code);
+        void onScheduleAdded(@NonNull Schedule schedule);
 
     }
 

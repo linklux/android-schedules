@@ -142,11 +142,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onScheduleAdded(@NonNull String code) {
-        api.validateScheduleCode(code);
-    }
-
-    @Override
     public void onRefresh() {
         if (schedules.getActiveSchedules() == 0)
             mSwipeRefreshLayout.setRefreshing(false);
@@ -155,13 +150,16 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onScheduleCodeValidated(String code, boolean exists) {
+    public void onScheduleAdded(@NonNull Schedule schedule) {
+        api.validateSchedule(schedule);
+    }
+
+    @Override
+    public void onScheduleCodeValidated(Schedule schedule, boolean exists) {
         if (!exists) {
             Toast.makeText(getApplicationContext(), "Unable to add schedule, it either doesn't exists or is already added.", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        Schedule schedule = new Schedule(code, true);
 
         settings.writeSchedule(schedule);
         settings.save();

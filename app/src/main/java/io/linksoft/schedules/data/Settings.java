@@ -15,7 +15,6 @@ public class Settings {
     private static final String FILE_NAME = "settings.json";
 
     private Activity activity;
-
     private JSONObject settings;
 
     public Settings(Activity activity) {
@@ -67,7 +66,12 @@ public class Settings {
                 }
             }
 
-            schedule = new Schedule(obj.getString("code"), obj.getBoolean("enabled"), new Date(obj.getLong("syncTime")));
+            schedule = new Schedule(
+                obj.getString("code"),
+                obj.getString("label"),
+                obj.getBoolean("enabled"),
+                new Date(obj.getLong("syncTime"))
+            );
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -124,6 +128,7 @@ public class Settings {
 
             JSONObject json = new JSONObject();
             json.put("code", schedule.getCode());
+            json.put("label", schedule.getLabel());
             json.put("enabled", schedule.isEnabled());
             json.put("syncTime", schedule.getSyncTime().getTime());
 

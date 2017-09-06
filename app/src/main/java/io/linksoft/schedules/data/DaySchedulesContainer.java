@@ -47,7 +47,7 @@ public class DaySchedulesContainer implements Parcelable {
                 classes.add(cls);
             }
 
-            this.schedules.put(schedule.getCode(), classes);
+            this.schedules.put(schedule.getFullName(), classes);
         }
     }
 
