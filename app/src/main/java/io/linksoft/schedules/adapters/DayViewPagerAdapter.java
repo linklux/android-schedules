@@ -17,8 +17,10 @@ public class DayViewPagerAdapter extends ViewPagerAdapter {
 
     private LongSparseArray<DaySchedulesContainer> days = new LongSparseArray<>();
 
-    public DayViewPagerAdapter(FragmentManager fm, Map<String, Schedule> schedules) {
+    public DayViewPagerAdapter(FragmentManager fm, int displayWeeks, Map<String, Schedule> schedules) {
         super(fm, schedules);
+
+        this.displayWeeks = displayWeeks;
 
         setActiveSchedules();
         loadDays();
@@ -26,7 +28,7 @@ public class DayViewPagerAdapter extends ViewPagerAdapter {
 
     private void loadDays() {
         Date start = DateUtil.getWeekStart(new Date(), 0);
-        Date end = DateUtil.getWeekStart(new Date(), 2);
+        Date end = DateUtil.getWeekStart(new Date(), displayWeeks);
         ArrayList<Date> dates = DateUtil.getDateRange(start, end, true);
 
         for (Date date : dates)

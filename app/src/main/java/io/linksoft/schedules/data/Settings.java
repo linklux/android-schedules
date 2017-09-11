@@ -1,6 +1,7 @@
 package io.linksoft.schedules.data;
 
 import android.app.Activity;
+import android.preference.PreferenceManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,6 +12,9 @@ import java.util.Date;
 import io.linksoft.schedules.util.FileUtil;
 
 public class Settings {
+
+    public static final String PREF_WIFI_ONLY = "wifi-only-sync";
+    public static final String PREF_LOAD_WEEKS = "week-load-size";
 
     private static final String FILE_NAME = "settings.json";
 
@@ -42,10 +46,20 @@ public class Settings {
         return FileUtil.writeFile(activity, FILE_NAME, settings.toString(), FileUtil.TYPE_NORMAL);
     }
 
-    public String getOption(String name) {
+    /**
+     * Fetch a setting from the custom settings file. If the setting is not
+     * found, attempt to retrieve it from Android's SharedPreferences.
+     *
+     * @param name The setting name
+     * @return string Settings value
+     */
+    public String getSetting(String name) {
         Object value = getOptionValue(name);
 
-        return value == null ? "" : (String) value;
+        if (value == null)
+            value = PreferenceManager.getDefaultSharedPreferences(activity).getString(name, "");
+
+        return (String) value;
     }
 
     public Schedule getSchedule(String code) {

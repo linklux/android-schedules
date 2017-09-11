@@ -12,7 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_item_content"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/colorDarkT"/>
 
     <TextView
         android:id="@+id/class_item_location"
@@ -20,7 +21,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_margin="@dimen/margin_item_content"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:textColor="@color/colorDarkT"/>
 
     <View
         android:id="@+id/class_item_separator"
@@ -34,6 +36,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/class_item_separator"
-        android:layout_margin="@dimen/margin_item_content"/>
+        android:layout_margin="@dimen/margin_item_content"
+        android:textColor="@color/colorDarkT"/>
 
 </RelativeLayout>

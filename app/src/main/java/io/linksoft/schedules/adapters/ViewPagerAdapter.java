@@ -15,10 +15,20 @@ public abstract class ViewPagerAdapter extends FragmentPagerAdapter {
 
     protected List<Schedule> activeSchedules = new ArrayList<>();
 
+    protected int displayWeeks;
+
     public ViewPagerAdapter(FragmentManager fm, Map<String, Schedule> schedules) {
         super(fm);
 
         this.schedules = schedules;
+    }
+
+    public int getDisplayWeeks() {
+        return displayWeeks;
+    }
+
+    public void setDisplayWeeks(int displayWeeks) {
+        this.displayWeeks = displayWeeks;
     }
 
 }

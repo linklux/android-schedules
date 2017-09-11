@@ -23,15 +23,18 @@ public class ScheduleViewPagerFragment extends Fragment {
 
     private static final String ARG_SCHEDULE = "schedule";
     private static final String ARG_POSITION = "position";
+    private static final String ARG_DISPLAY_WEEKS = "displayWeeks";
     private static final String ARG_CLASSES = "classes";
 
     protected List<Class> mClasses;
+    protected int displayWeeks;
 
-    public static ScheduleViewPagerFragment newInstance(Schedule schedule, int position) {
+    public static ScheduleViewPagerFragment newInstance(Schedule schedule, int position, int displayWeeks) {
         ScheduleViewPagerFragment fragment = new ScheduleViewPagerFragment();
         Bundle args = new Bundle();
 
         args.putInt(ARG_POSITION, position);
+        args.putInt(ARG_DISPLAY_WEEKS, displayWeeks);
         args.putString(ARG_SCHEDULE, schedule.getCode());
         args.putParcelableArrayList(ARG_CLASSES, schedule.getClasses());
         fragment.setArguments(args);
@@ -43,8 +46,10 @@ public class ScheduleViewPagerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null)
+        if (getArguments() != null) {
+            displayWeeks = getArguments().getInt(ARG_DISPLAY_WEEKS);
             mClasses = getArguments().getParcelableArrayList(ARG_CLASSES);
+        }
     }
 
     @Override
@@ -55,7 +60,7 @@ public class ScheduleViewPagerFragment extends Fragment {
         SectionedRecyclerViewAdapter sectionAdapter = new SectionedRecyclerViewAdapter();
         List<Class> classes = new ArrayList<>();
 
-        Date dateLimit = DateUtil.getWeekStart(mClasses.get(0).getTimeStart(), 2);
+        Date dateLimit = DateUtil.getWeekStart(mClasses.get(0).getTimeStart(), displayWeeks);
         String curDay = DateUtil.getScheduleDay(mClasses.get(0).getTimeStart());
 
         int i = 0;

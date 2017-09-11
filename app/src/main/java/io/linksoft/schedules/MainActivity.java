@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity
         mSwipeRefreshLayout = (CustomSwipeRefreshLayout) findViewById(R.id.refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        String viewSetting = settings.getOption("view");
+        String viewSetting = settings.getSetting("view");
         activeView = viewSetting.isEmpty() ? VIEW_DAY : Integer.parseInt(viewSetting);
 
         registerSchedules();
@@ -130,6 +130,8 @@ public class MainActivity extends AppCompatActivity
             settings.save();
 
             reload();
+        } else if (id == R.id.settings_view) {
+            startActivity(new Intent(this, SettingsActivity.class));
         } else if (id == 0) {
             shouldClose = false;
             if (!handleScheduleClick(item)) return false;
@@ -205,10 +207,12 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (mPager.getAdapter() == null) {
+            int displayWeeks = Integer.parseInt(settings.getSetting(Settings.PREF_LOAD_WEEKS));
+
             if (activeView == VIEW_DAY) {
-                pagerAdapter = new DayViewPagerAdapter(getSupportFragmentManager(), schedules.get());
+                pagerAdapter = new DayViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
             } else if (activeView == VIEW_SCHEDULE) {
-                pagerAdapter = new ScheduleViewPagerAdapter(getSupportFragmentManager(), schedules.get());
+                pagerAdapter = new ScheduleViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
             }
 
             mPager.setAdapter(pagerAdapter);

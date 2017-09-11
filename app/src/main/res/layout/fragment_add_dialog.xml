@@ -35,7 +35,8 @@
         android:hint="Class code"
         android:inputType="text"
         android:padding="10dp"
-        android:textColor="@color/colorDark"/>
+        android:textColor="@color/colorDark"
+        android:textColorHint="@color/colorDarkT"/>
 
     <EditText
         android:id="@+id/add_dialog_label"
@@ -47,7 +48,8 @@
         android:hint="Class label"
         android:inputType="text"
         android:padding="10dp"
-        android:textColor="@color/colorDark"/>
+        android:textColor="@color/colorDark"
+        android:textColorHint="@color/colorDarkT"/>
 
     <Button
         android:id="@+id/add_dialog_submit"

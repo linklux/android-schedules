@@ -14,8 +14,10 @@ public class ScheduleViewPagerAdapter extends ViewPagerAdapter {
 
     private List<String> positionMap = new ArrayList<>();
 
-    public ScheduleViewPagerAdapter(FragmentManager fm, Map<String, Schedule> schedules) {
+    public ScheduleViewPagerAdapter(FragmentManager fm, int displayWeeks, Map<String, Schedule> schedules) {
         super(fm, schedules);
+
+        this.displayWeeks = displayWeeks;
 
         setPositionMap();
     }
@@ -47,7 +49,7 @@ public class ScheduleViewPagerAdapter extends ViewPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return ScheduleViewPagerFragment.newInstance(getScheduleById(position), position);
+        return ScheduleViewPagerFragment.newInstance(getScheduleById(position), position, displayWeeks);
     }
 
     @Override
