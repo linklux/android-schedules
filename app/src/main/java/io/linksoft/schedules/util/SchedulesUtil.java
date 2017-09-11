@@ -80,8 +80,8 @@ public class SchedulesUtil {
         return new Date().after(DateUtil.getDateByDayOffset(get(schedule).getSyncTime(), ScheduleCache.CACHE_DAYS));
     }
 
-    public void syncAll() {
-        if (!NetUtil.hasNetworkConnection(activity)) return;
+    public boolean syncAll() {
+        if (!NetUtil.hasNetworkConnection(activity)) return false;
         clearCache();
 
         for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
@@ -90,6 +90,8 @@ public class SchedulesUtil {
             entry.getValue().setSynced(false);
             api.syncSchedule(entry.getValue());
         }
+
+        return true;
     }
 
     public boolean isAllSynced() {

@@ -16,10 +16,13 @@ public class NetUtil {
         ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
 
+        if (networkInfo == null)
+            return false;
+
         if (PreferenceManager.getDefaultSharedPreferences(activity).getBoolean(Settings.PREF_WIFI_ONLY, false))
             return networkInfo.getType() == ConnectivityManager.TYPE_WIFI;
 
-        return networkInfo != null && networkInfo.isConnected();
+        return networkInfo.isConnected();
     }
 
 }

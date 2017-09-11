@@ -148,7 +148,12 @@ public class MainActivity extends AppCompatActivity
         if (schedules.getActiveSchedules() == 0)
             mSwipeRefreshLayout.setRefreshing(false);
 
-        schedules.syncAll();
+        if (!schedules.syncAll()) {
+            if (mSwipeRefreshLayout.isRefreshing())
+                mSwipeRefreshLayout.setRefreshing(false);
+
+            Toast.makeText(getApplicationContext(), "No internet connection detected!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
