@@ -17,11 +17,19 @@ public class WindesheimApi {
 
     private Activity activity;
 
-    private WindesheimApiListener listener;
+    private OnScheduleCodeValidatedListener validationListener;
+    private OnScheduleSyncedListener syncedListener;
 
-    public WindesheimApi(Activity activity, WindesheimApiListener listener) {
+    public WindesheimApi(Activity activity) {
         this.activity = activity;
-        this.listener = listener;
+    }
+
+    public void setOnScheduleCodeValidatedListener(OnScheduleCodeValidatedListener validationListener) {
+        this.validationListener = validationListener;
+    }
+
+    public void setOnScheduleSyncedListener(OnScheduleSyncedListener syncedListener) {
+        this.syncedListener = syncedListener;
     }
 
     public void syncSchedule(final Schedule schedule) {
@@ -42,7 +50,7 @@ public class WindesheimApi {
                         schedule.setSynced(true);
                         schedule.setSyncTime(new Date());
 
-                        listener.onScheduleSynced(schedule);
+                        syncedListener.onScheduleSynced(schedule);
                     }
                 });
             }
@@ -63,7 +71,7 @@ public class WindesheimApi {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onScheduleCodeValidated(schedule, !result.equals("[]"));
+                        validationListener.onScheduleCodeValidated(schedule, !result.equals("[]"));
                     }
                 });
             }
@@ -88,9 +96,13 @@ public class WindesheimApi {
         return BASE_URL + endPoint.replace("{code}", code);
     }
 
-    public interface WindesheimApiListener {
+    public interface OnScheduleCodeValidatedListener {
 
         void onScheduleCodeValidated(Schedule schedule, boolean exists);
+
+    }
+
+    public interface OnScheduleSyncedListener {
 
         void onScheduleSynced(Schedule schedule);
 

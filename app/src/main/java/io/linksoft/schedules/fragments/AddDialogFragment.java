@@ -1,6 +1,5 @@
 package io.linksoft.schedules.fragments;
 
-import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -8,26 +7,46 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import io.linksoft.schedules.R;
 import io.linksoft.schedules.data.Schedule;
+import io.linksoft.schedules.data.Settings;
+import io.linksoft.schedules.net.WindesheimApi;
 
-public class AddDialogFragment extends DialogFragment {
+public class AddDialogFragment extends BaseDialogFragment implements WindesheimApi.OnScheduleCodeValidatedListener{
 
-    OnScheduleAddListener listener;
+    private WindesheimApi api;
 
-    public static AddDialogFragment newInstance() {
-        AddDialogFragment f = new AddDialogFragment();
-        Bundle args = new Bundle();
-
-        f.setArguments(args);
-
-        return f;
+    /**
+     * Validates a schedule.
+     *
+     * @param schedule Schedule
+     */
+    private void validateSchedule(@NonNull Schedule schedule) {
+        api.validateSchedule(schedule);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onScheduleCodeValidated(Schedule schedule, boolean exists) {
+        if (!exists) {
+            Toast.makeText(getActivity().getApplicationContext(), "Unable to add schedule, it either doesn't exists or is already added.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        Settings settings = new Settings(getActivity());
+        settings.writeSchedule(schedule);
+        settings.save();
+
+        listener.onDialogActionSubmit(true);
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstance) {
+        super.onCreate(savedInstance);
+
+        api = new WindesheimApi(getActivity());
+        api.setOnScheduleCodeValidatedListener(this);
     }
 
     @Override
@@ -49,21 +68,11 @@ public class AddDialogFragment extends DialogFragment {
                     true
                 );
 
-                listener.onScheduleAdded(schedule);
+                validateSchedule(schedule);
             }
         });
 
         return v;
-    }
-
-    public void setOnScheduleAddSubmitListener(@NonNull OnScheduleAddListener listener) {
-        this.listener = listener;
-    }
-
-    public interface OnScheduleAddListener {
-
-        void onScheduleAdded(@NonNull Schedule schedule);
-
     }
 
 }

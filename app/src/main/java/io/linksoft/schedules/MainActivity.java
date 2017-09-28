@@ -1,7 +1,5 @@
 package io.linksoft.schedules;
 
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -32,6 +30,7 @@ import io.linksoft.schedules.adapters.ViewPagerAdapter;
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.fragments.AddDialogFragment;
+import io.linksoft.schedules.fragments.BaseDialogFragment;
 import io.linksoft.schedules.fragments.DayViewPagerFragment;
 import io.linksoft.schedules.fragments.OrderDialogFragment;
 import io.linksoft.schedules.layouts.CustomSwipeRefreshLayout;
@@ -43,10 +42,9 @@ import io.linksoft.schedules.util.SchedulesUtil;
 public class MainActivity extends AppCompatActivity
     implements
         NavigationView.OnNavigationItemSelectedListener,
-        AddDialogFragment.OnScheduleAddListener,
-        OrderDialogFragment.OnScheduleOrderSubmittedListener,
+        BaseDialogFragment.OnDialogActionListener,
         SwipeRefreshLayout.OnRefreshListener,
-        WindesheimApi.WindesheimApiListener,
+        WindesheimApi.OnScheduleSyncedListener,
         ViewPager.OnPageChangeListener {
 
     private static final int VIEW_DAY = 1;
@@ -60,7 +58,6 @@ public class MainActivity extends AppCompatActivity
     private ViewPagerAdapter pagerAdapter;
 
     private Settings settings;
-    private WindesheimApi api;
 
     private SchedulesUtil schedules;
 
@@ -71,8 +68,10 @@ public class MainActivity extends AppCompatActivity
         // Initialize all settings with their default value as defined by the 'android:defaultValue' property
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        WindesheimApi api = new WindesheimApi(this);
+        api.setOnScheduleSyncedListener(this);
+
         settings = new Settings(this);
-        api = new WindesheimApi(this, this);
         schedules = new SchedulesUtil(this, api);
 
         setContentView(R.layout.activity_main);
@@ -131,9 +130,16 @@ public class MainActivity extends AppCompatActivity
 
         // TODO Might be worth looking into the use of the command pattern here
         if (id == R.id.schedule_add) {
-            showAddDialog();
+            AddDialogFragment dialog = new AddDialogFragment();
+
+            dialog.setOnDialogActionListener(this);
+            dialog.show(this);
         } else if (id == R.id.schedule_order) {
-            showOrderDialog();
+            OrderDialogFragment dialog = new OrderDialogFragment();
+
+            dialog.setSchedules(schedules.get());
+            dialog.setOnDialogActionListener(this);
+            dialog.show(this);
         } else if (id == R.id.schedule_save) {
             reload();
         } else if (id == R.id.schedules_remove) {
@@ -170,25 +176,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    // TODO Check which of the schedule handling callbacks can be handled by their fragment
-    @Override
-    public void onScheduleAdded(@NonNull Schedule schedule) {
-        api.validateSchedule(schedule);
-    }
-
-    @Override
-    public void onScheduleCodeValidated(Schedule schedule, boolean exists) {
-        if (!exists) {
-            Toast.makeText(getApplicationContext(), "Unable to add schedule, it either doesn't exists or is already added.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        settings.writeSchedule(schedule);
-        settings.save();
-
-        reload();
-    }
-
     @Override
     public void onScheduleSynced(Schedule schedule) {
         schedules.writeToCache(schedule.getCode());
@@ -204,12 +191,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onScheduleOrderSubmitted() {
-        reload();
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
     }
-
-    @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
     @Override
     public void onPageSelected(int position) {
@@ -220,7 +203,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) { }
+    public void onPageScrollStateChanged(int state) {
+    }
+
+    @Override
+    public void onDialogActionSubmit(boolean reload) {
+        if (reload) {
+            reload();
+        }
+    }
 
     // TODO Check if this can be handled by the different pager fragments
     public void setPagerView() {
@@ -297,6 +288,9 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Simple activity reload.
+     */
     private void reload() {
         Intent intent = getIntent();
 
@@ -304,45 +298,4 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    /**
-     * Set-up a base dialog fragment transaction. Handles the removing of a previous
-     * fragment if it exists and adds itself to the backstack.
-     *
-     * @return FragmentTransaction
-     */
-    private FragmentTransaction setupDialogTransaction() {
-        FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("dialog");
-
-        if (prev != null)
-            ft.remove(prev);
-
-        ft.addToBackStack(null);
-
-        return ft;
-    }
-
-    /**
-     * Show the add schedule dialog and register the required callbacks.
-     */
-    private void showAddDialog() {
-        FragmentTransaction ft = setupDialogTransaction();
-
-        AddDialogFragment dialog = AddDialogFragment.newInstance();
-        dialog.setOnScheduleAddSubmitListener(this);
-        dialog.show(ft, "dialog");
-    }
-
-    /**
-     * Show the schedule reorder dialog and register the required callbacks and
-     * schedule data.
-     */
-    private void showOrderDialog() {
-        FragmentTransaction ft = setupDialogTransaction();
-
-        OrderDialogFragment dialog = OrderDialogFragment.newInstance();
-        dialog.setOnScheduleOrderSubmittedListener(this);
-        dialog.setSchedules(schedules.get());
-        dialog.show(ft, "dialog");
-    }
 }
