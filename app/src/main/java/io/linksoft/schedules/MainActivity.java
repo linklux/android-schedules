@@ -33,6 +33,7 @@ import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.fragments.AddDialogFragment;
 import io.linksoft.schedules.fragments.DayViewPagerFragment;
+import io.linksoft.schedules.fragments.OrderDialogFragment;
 import io.linksoft.schedules.layouts.CustomSwipeRefreshLayout;
 import io.linksoft.schedules.net.WindesheimApi;
 import io.linksoft.schedules.util.DateUtil;
@@ -40,9 +41,14 @@ import io.linksoft.schedules.util.SchedulesUtil;
 
 @SuppressWarnings("ConstantConditions")
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AddDialogFragment.OnScheduleAddListener, SwipeRefreshLayout.OnRefreshListener, WindesheimApi.WindesheimApiListener, ViewPager.OnPageChangeListener {
+    implements
+        NavigationView.OnNavigationItemSelectedListener,
+        AddDialogFragment.OnScheduleAddListener,
+        OrderDialogFragment.OnScheduleOrderSubmittedListener,
+        SwipeRefreshLayout.OnRefreshListener,
+        WindesheimApi.WindesheimApiListener,
+        ViewPager.OnPageChangeListener {
 
-    // TODO Not hardcode views, reflection might be an option
     private static final int VIEW_DAY = 1;
     private static final int VIEW_SCHEDULE = 2;
 
@@ -86,7 +92,7 @@ public class MainActivity extends AppCompatActivity
         mSwipeRefreshLayout = (CustomSwipeRefreshLayout) findViewById(R.id.refresh_layout);
         mSwipeRefreshLayout.setOnRefreshListener(this);
 
-        String viewSetting = settings.getSetting("view");
+        String viewSetting = settings.getOption(Settings.PREF_VIEW);
         activeView = viewSetting.isEmpty() ? VIEW_DAY : Integer.parseInt(viewSetting);
 
         registerSchedules();
@@ -114,6 +120,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        // TODO Add the actions as defined in the drawer menu here as well
         return id == R.id.action_settings || super.onOptionsItemSelected(item);
     }
 
@@ -122,8 +129,11 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         boolean shouldClose = true;
 
+        // TODO Might be worth looking into the use of the command pattern here
         if (id == R.id.schedule_add) {
-            showDialog();
+            showAddDialog();
+        } else if (id == R.id.schedule_order) {
+            showOrderDialog();
         } else if (id == R.id.schedule_save) {
             reload();
         } else if (id == R.id.schedules_remove) {
@@ -160,6 +170,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // TODO Check which of the schedule handling callbacks can be handled by their fragment
     @Override
     public void onScheduleAdded(@NonNull Schedule schedule) {
         api.validateSchedule(schedule);
@@ -193,8 +204,12 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+    public void onScheduleOrderSubmitted() {
+        reload();
     }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
 
     @Override
     public void onPageSelected(int position) {
@@ -205,9 +220,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onPageScrollStateChanged(int state) {
-    }
+    public void onPageScrollStateChanged(int state) { }
 
+    // TODO Check if this can be handled by the different pager fragments
     public void setPagerView() {
         if (mPager == null) {
             mPager = (ViewPager) findViewById(R.id.pager);
@@ -216,7 +231,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         if (mPager.getAdapter() == null) {
-            int displayWeeks = Integer.parseInt(settings.getSetting(Settings.PREF_LOAD_WEEKS));
+            int displayWeeks = Integer.parseInt(settings.getOption(Settings.PREF_LOAD_WEEKS));
 
             if (activeView == VIEW_DAY) {
                 pagerAdapter = new DayViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
@@ -249,6 +264,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    // TODO Move enabling / disabling schedules to a more sensible place, instead of the navigation drawer
     private boolean handleScheduleClick(MenuItem item) {
         String title = item.getTitle().toString();
         if (!schedules.has(title)) return false;
@@ -266,13 +282,6 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void reload() {
-        Intent intent = getIntent();
-
-        finish();
-        startActivity(intent);
-    }
-
     private void refreshMenu() {
         NavigationView mNavigationView = (NavigationView) findViewById(R.id.nav_view);
 
@@ -288,7 +297,20 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void showDialog() {
+    private void reload() {
+        Intent intent = getIntent();
+
+        finish();
+        startActivity(intent);
+    }
+
+    /**
+     * Set-up a base dialog fragment transaction. Handles the removing of a previous
+     * fragment if it exists and adds itself to the backstack.
+     *
+     * @return FragmentTransaction
+     */
+    private FragmentTransaction setupDialogTransaction() {
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         Fragment prev = getFragmentManager().findFragmentByTag("dialog");
 
@@ -297,9 +319,30 @@ public class MainActivity extends AppCompatActivity
 
         ft.addToBackStack(null);
 
-        AddDialogFragment addDialog = AddDialogFragment.newInstance();
-        addDialog.setOnScheduleAddSubmitListener(this);
-        addDialog.show(ft, "dialog");
+        return ft;
     }
 
+    /**
+     * Show the add schedule dialog and register the required callbacks.
+     */
+    private void showAddDialog() {
+        FragmentTransaction ft = setupDialogTransaction();
+
+        AddDialogFragment dialog = AddDialogFragment.newInstance();
+        dialog.setOnScheduleAddSubmitListener(this);
+        dialog.show(ft, "dialog");
+    }
+
+    /**
+     * Show the schedule reorder dialog and register the required callbacks and
+     * schedule data.
+     */
+    private void showOrderDialog() {
+        FragmentTransaction ft = setupDialogTransaction();
+
+        OrderDialogFragment dialog = OrderDialogFragment.newInstance();
+        dialog.setOnScheduleOrderSubmittedListener(this);
+        dialog.setSchedules(schedules.get());
+        dialog.show(ft, "dialog");
+    }
 }

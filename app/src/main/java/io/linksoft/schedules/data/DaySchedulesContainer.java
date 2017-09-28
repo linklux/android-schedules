@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +16,7 @@ public class DaySchedulesContainer implements Parcelable {
 
     private Date date;
 
-    private HashMap<String, List<Class>> schedules = new HashMap<>();
+    private LinkedHashMap<String, List<Class>> schedules = new LinkedHashMap<>();
 
     public DaySchedulesContainer(Date date, List<Schedule> schedules) {
         this.date = date;
@@ -51,7 +51,7 @@ public class DaySchedulesContainer implements Parcelable {
         }
     }
 
-    public HashMap<String, List<Class>> getSchedules() {
+    public LinkedHashMap<String, List<Class>> getSchedules() {
         return schedules;
     }
 

@@ -13,8 +13,14 @@ import io.linksoft.schedules.util.FileUtil;
 
 public class Settings {
 
+    // Preferences stored in Android's SharedPreferences
     public static final String PREF_WIFI_ONLY = "wifi-only-sync";
     public static final String PREF_LOAD_WEEKS = "week-load-size";
+
+    // Self managed preferences
+    public static final String PREF_VIEW = "view";
+    public static final String PREF_SCHEDULE_LIST = "schedules";
+    public static final String PREF_SCHEDULE_ORDER = "schedule_order";
 
     private static final String FILE_NAME = "settings.json";
 
@@ -47,13 +53,13 @@ public class Settings {
     }
 
     /**
-     * Fetch a setting from the custom settings file. If the setting is not
+     * Fetch an option from the custom settings file. If the setting is not
      * found, attempt to retrieve it from Android's SharedPreferences.
      *
      * @param name The setting name
      * @return string Settings value
      */
-    public String getSetting(String name) {
+    public String getOption(String name) {
         Object value = getOptionValue(name);
 
         if (value == null)
@@ -63,7 +69,7 @@ public class Settings {
     }
 
     public Schedule getSchedule(String code) {
-        JSONArray value = (JSONArray) getOptionValue("schedules");
+        JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
         if (value == null) return null;
 
         Schedule schedule = null;
@@ -93,14 +99,41 @@ public class Settings {
         return schedule;
     }
 
+    /**
+     * Fetch all schedules from the stored data as an ordered array if the
+     * Settings.PREF_SCHEDULE_ORDER setting exists. If the setting does exist,
+     * but a schedule is not added yet, it will be added *after* the existing
+     * ones.
+     *
+     * @return Schedule[]
+     */
     public Schedule[] getSchedules() {
-        JSONArray value = (JSONArray) getOptionValue("schedules");
+        JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
         if (value == null) return new Schedule[0];
 
+        String[] sortOrder = getOption(PREF_SCHEDULE_ORDER).split(",");
         Schedule[] schedules = new Schedule[value.length()];
 
+        // TODO Improve sorting
         try {
+            for (int i = 0; i < sortOrder.length; i++) {
+                String key = sortOrder[i];
+
+                for (int j = 0; j < schedules.length; j++) {
+                    if (i >= schedules.length || schedules[i] != null) continue;
+
+                    String code = value.getJSONObject(j).getString("code");
+                    if (code.equals(key)) {
+                        schedules[i] = getSchedule(code);
+
+                        break;
+                    }
+                }
+            }
+
             for (int i = 0; i < schedules.length; i++) {
+                if (schedules[i] != null) continue;
+
                 String code = value.getJSONObject(i).getString("code");
                 schedules[i] = getSchedule(code);
             }
@@ -127,14 +160,14 @@ public class Settings {
     }
 
     public boolean writeSchedule(Schedule schedule) {
-        JSONArray value = (JSONArray) getOptionValue("schedules");
+        JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
 
         try {
-            if (value == null) settings.put("schedules", new JSONArray());
-            int index = settings.getJSONArray("schedules").length();
+            if (value == null) settings.put(PREF_SCHEDULE_LIST, new JSONArray());
+            int index = settings.getJSONArray(PREF_SCHEDULE_LIST).length();
 
-            for (int i = 0; i < settings.getJSONArray("schedules").length(); i++) {
-                if (settings.getJSONArray("schedules").getJSONObject(i).get("code").equals(schedule.getCode())) {
+            for (int i = 0; i < settings.getJSONArray(PREF_SCHEDULE_LIST).length(); i++) {
+                if (settings.getJSONArray(PREF_SCHEDULE_LIST).getJSONObject(i).get("code").equals(schedule.getCode())) {
                     index = i;
                     break;
                 }
@@ -146,7 +179,7 @@ public class Settings {
             json.put("enabled", schedule.isEnabled());
             json.put("syncTime", schedule.getSyncTime().getTime());
 
-            settings.getJSONArray("schedules").put(index, json);
+            settings.getJSONArray(PREF_SCHEDULE_LIST).put(index, json);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -155,7 +188,7 @@ public class Settings {
     }
 
     public boolean removeSchedule(Schedule schedule) {
-        JSONArray value = (JSONArray) getOptionValue("schedules");
+        JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
         if (value == null) return false;
 
         boolean isRemoved = false;
@@ -163,7 +196,7 @@ public class Settings {
         try {
             for (int i = 0; i < value.length(); i++) {
                 if (value.getJSONObject(i).get("code").equals(schedule.getCode())) {
-                    settings.getJSONArray("schedules").remove(i);
+                    settings.getJSONArray(PREF_SCHEDULE_LIST).remove(i);
 
                     isRemoved = true;
                     break;

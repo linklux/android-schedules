@@ -10,4 +10,8 @@
     <string name="navigation_drawer_close">Sluit navigatie</string>
     <string name="navigation_drawer_open">Open navigatie</string>
     <string name="no_schedules">Geen lessen gevonden vandaag</string>
+    <string name="title_activity_settings">Instellingen</string>
+    <string name="nav_action_order">Volgorde bijwerken</string>
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_save">Opslaan</string>
 </resources>

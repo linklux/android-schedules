@@ -3,7 +3,7 @@ package io.linksoft.schedules.util;
 import android.app.Activity;
 
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import io.linksoft.schedules.MainActivity;
@@ -14,7 +14,7 @@ import io.linksoft.schedules.net.WindesheimApi;
 
 public class SchedulesUtil {
 
-    private HashMap<String, Schedule> schedules = new HashMap<>();
+    private LinkedHashMap<String, Schedule> schedules = new LinkedHashMap<>();
 
     private Activity activity;
     private WindesheimApi api;
@@ -54,7 +54,7 @@ public class SchedulesUtil {
         return schedules.get(code);
     }
 
-    public HashMap<String, Schedule> get() {
+    public LinkedHashMap<String, Schedule> get() {
         return schedules;
     }
 

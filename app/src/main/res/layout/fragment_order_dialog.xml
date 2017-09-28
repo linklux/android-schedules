@@ -1,0 +1,45 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorLight"
+    android:padding="@dimen/text_margin"
+    tools:context="io.linksoft.schedules.fragments.AddDialogFragment">
+
+    <TextView
+        android:id="@+id/order_dialog_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/colorDark"
+        android:layout_marginBottom="@dimen/text_margin"
+        android:text="@string/info_schedule_order"/>
+
+    <com.woxthebox.draglistview.DragListView
+        android:id="@+id/drag_list_view"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/order_dialog_info"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:id="@+id/order_dialog_cancel"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/drag_list_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_margin"
+        android:text="@string/action_cancel"
+        android:textColor="@color/colorPrimary"/>
+
+    <Button
+        android:id="@+id/order_dialog_save"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/drag_list_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/text_margin"
+        android:text="@string/action_save"
+        android:textColor="@color/colorPrimary"/>
+
+</RelativeLayout>

@@ -4,8 +4,14 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="action_save">Save</string>
+    <string name="action_cancel">Cancel</string>
+
+    <string name="info_schedule_order">Reordering the schedules can be done by dragging and dropping the items in the list below.</string>
+
     <string name="nav_action_settings">Settings</string>
     <string name="nav_action_add">Add schedule</string>
+    <string name="nav_action_order">Change order</string>
     <string name="nav_action_refresh">Refresh schedules</string>
     <string name="nav_action_save">Save changes</string>
     <string name="nav_action_remove">Remove inactive</string>
