@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/text_margin"
-        android:text="Add a schedule"
+        android:text="@string/header_add_schedule"
         android:textColor="@color/colorDark"
         android:textSize="14dp"
         android:textStyle="bold"/>
@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/add_dialog_header"
         android:layout_marginBottom="@dimen/text_margin"
-        android:text="Validation is partially implemented, auto-complete has yet to come. Please be sure to spell it correctly (capitalization matters!)"
+        android:text="@string/info_schedule_add"
         android:textColor="@color/colorDark"/>
 
     <EditText
@@ -32,7 +32,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/add_dialog_subheader"
         android:backgroundTint="@color/colorPrimary"
-        android:hint="Class code"
+        android:hint="@string/info_class_code"
         android:inputType="text"
         android:padding="10dp"
         android:textColor="@color/colorDark"
@@ -45,11 +45,21 @@
         android:layout_below="@+id/add_dialog_class"
         android:layout_marginBottom="@dimen/text_margin"
         android:backgroundTint="@color/colorPrimary"
-        android:hint="Class label"
+        android:hint="@string/info_class_label"
         android:inputType="text"
         android:padding="10dp"
         android:textColor="@color/colorDark"
         android:textColorHint="@color/colorDarkT"/>
+
+    <Button
+        android:id="@+id/add_dialog_cancel"
+        style="?android:attr/borderlessButtonStyle"
+        android:layout_below="@+id/add_dialog_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/text_margin"
+        android:text="@string/action_cancel"
+        android:textColor="@color/colorPrimary"/>
 
     <Button
         android:id="@+id/add_dialog_submit"
@@ -59,7 +69,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/add_dialog_label"
         android:layout_marginTop="@dimen/text_margin"
-        android:text="Add schedule"
+        android:text="@string/action_add_schedule"
         android:textColor="@color/colorPrimary"/>
 
 </RelativeLayout>

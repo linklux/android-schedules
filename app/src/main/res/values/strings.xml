@@ -6,8 +6,14 @@
 
     <string name="action_save">Save</string>
     <string name="action_cancel">Cancel</string>
+    <string name="action_add_schedule">Add schedule</string>
+
+    <string name="header_add_schedule">Add a schedule</string>
 
     <string name="info_schedule_order">Reordering the schedules can be done by dragging and dropping the items in the list below.</string>
+    <string name="info_schedule_add">Validation is partially implemented, auto-complete has yet to come. Please be sure to spell it correctly (capitalization matters!).</string>
+    <string name="info_class_code">Class code</string>
+    <string name="info_class_label">Class label</string>
 
     <string name="nav_action_settings">Settings</string>
     <string name="nav_action_add">Add schedule</string>
@@ -24,8 +30,6 @@
     <string name="cheering" translatable="false">\\o/</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Strings related to Settings -->
-
     <!-- General settings -->
     <string-array name="pref_list_weeks">
         <item>1</item>
@@ -39,7 +43,4 @@
         <item>9</item>
         <item>10</item>
     </string-array>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

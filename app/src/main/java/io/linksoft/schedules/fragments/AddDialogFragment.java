@@ -55,9 +55,11 @@ public class AddDialogFragment extends BaseDialogFragment implements WindesheimA
 
         final EditText code = (EditText) v.findViewById(R.id.add_dialog_class);
         final EditText label = (EditText) v.findViewById(R.id.add_dialog_label);
-        final Button button = (Button) v.findViewById(R.id.add_dialog_submit);
+        final Button btnSubmit = (Button) v.findViewById(R.id.add_dialog_submit);
+        final Button btnCancel = (Button) v.findViewById(R.id.add_dialog_cancel);
 
-        button.setOnClickListener(new View.OnClickListener() {
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
                 if (code == null || listener == null) return;
                 if (code.getText().toString().isEmpty()) return;
@@ -69,6 +71,13 @@ public class AddDialogFragment extends BaseDialogFragment implements WindesheimA
                 );
 
                 validateSchedule(schedule);
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
             }
         });
 

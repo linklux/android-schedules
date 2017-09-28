@@ -14,4 +14,10 @@
     <string name="nav_action_order">Volgorde bijwerken</string>
     <string name="action_cancel">Annuleren</string>
     <string name="action_save">Opslaan</string>
+    <string name="info_schedule_add">Validatie is slechts gedeeltelijk geimplementeerd en autocomplete ontbreekt (nog) volledig. Zorg ervoor dat het goed gespeld is, ook de hoofdletters!</string>
+    <string name="info_class_label">Klas label</string>
+    <string name="info_class_code">Klascode</string>
+    <string name="header_add_schedule">Een rooster toevoegen</string>
+    <string name="action_add_schedule">Rooster toevoegen</string>
+    <string name="info_schedule_order">Het orderen van de roosters kan door in onderstaande lijst de klassen in de goede volgorde te slepen.</string>
 </resources>
