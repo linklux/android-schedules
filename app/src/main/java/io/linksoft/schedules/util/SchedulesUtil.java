@@ -28,6 +28,13 @@ public class SchedulesUtil {
         cache = new ScheduleCache(activity);
     }
 
+    /**
+     * Add a schedule to the list of schedules and sync its classes if
+     * required. When there's no network connection, the classes are loaded
+     * from the cache.
+     *
+     * @param schedule Schedule
+     */
     public void add(Schedule schedule) {
         schedules.put(schedule.getCode(), schedule);
 
@@ -38,30 +45,61 @@ public class SchedulesUtil {
         }
     }
 
-    public void set(Schedule[] schedules) {
+    /**
+     * Adds a collection of schedules and sync their classes if required.
+     * When there's no network connection, the classes are loaded from the
+     * cache.
+     *
+     * @param schedules Schedules[]
+     */
+    public void add(Schedule[] schedules) {
         for (Schedule schedule : schedules) {
             add(schedule);
 
-            if (this.schedules.size() == schedules.length && isAllSynced())
+            if (this.schedules.size() == schedules.length && isAllSynced()) {
                 ((MainActivity) activity).setPagerView();
+            }
         }
     }
 
+    /**
+     * Get a schedule. When a schedule with the given code does not exist, a
+     * new schedule with the code 'Unknown' is returned.
+     *
+     * @param code Schedule code
+     * @return Schedule
+     */
     public Schedule get(String code) {
         if (!has(code))
-            return new Schedule("Unknown: " + code, "", true);
+            return new Schedule("Unknown: ", "", true);
 
         return schedules.get(code);
     }
 
+    /**
+     * Get the sorted map of schedules.
+     *
+     * @return LinkedHashMap
+     */
     public LinkedHashMap<String, Schedule> get() {
         return schedules;
     }
 
+    /**
+     * Check whether or not a schedule exists.
+     *
+     * @param code Schedule code
+     * @return Schedule exists
+     */
     public boolean has(String code) {
         return schedules.containsKey(code);
     }
 
+    /**
+     * Get the amount of currently added schedules.
+     *
+     * @return Schedule count
+     */
     public int size() {
         return schedules.size();
     }
@@ -70,7 +108,6 @@ public class SchedulesUtil {
      * Removes all inactive schedules and returns the deletion counter.
      *
      * @param settings Settings
-     *
      * @return The amount of deleted schedules
      */
     public int removeInactive(Settings settings) {
@@ -89,6 +126,13 @@ public class SchedulesUtil {
         return deleteCount;
     }
 
+    /**
+     * Determined if a schedule should be synced or not. A schedule 'needs' a
+     * sync when the last sync was more than CACHE_DAYS ago.
+     *
+     * @param schedule Schedule code
+     * @return Should sync
+     */
     public boolean shouldSync(String schedule) {
         if (!FileUtil.fileExists(activity, ScheduleCache.FILE_NAME, FileUtil.TYPE_CACHE))
             return true;
@@ -96,6 +140,12 @@ public class SchedulesUtil {
         return new Date().after(DateUtil.getDateByDayOffset(get(schedule).getSyncTime(), ScheduleCache.CACHE_DAYS));
     }
 
+    /**
+     * Sync all schedules when there's a network connection regardless of
+     * schedule sync state.
+     *
+     * @return Syncing tasks successful created
+     */
     public boolean syncAll() {
         if (!NetUtil.hasNetworkConnection(activity)) return false;
         clearCache();
@@ -110,6 +160,11 @@ public class SchedulesUtil {
         return true;
     }
 
+    /**
+     * Checks or all active(enabled) schedules are in sync.
+     *
+     * @return All schedules synced
+     */
     public boolean isAllSynced() {
         boolean isSynced = true;
 
@@ -125,14 +180,30 @@ public class SchedulesUtil {
         return isSynced;
     }
 
+    /**
+     * Write schedule class list to the cache.
+     *
+     * @param schedule Schedule code
+     * @return Wrting successful
+     */
     public boolean writeToCache(String schedule) {
         return has(schedule) && cache.write(get(schedule));
     }
 
+    /**
+     * Clear schedule class cache.
+     *
+     * @return Clearing successful
+     */
     public boolean clearCache() {
         return cache.clear();
     }
 
+    /**
+     * Get the amount of active(enabled) schedules.
+     *
+     * @return Schedule count
+     */
     public int getActiveSchedules() {
         int count = 0;
 

@@ -10,6 +10,12 @@ import io.linksoft.schedules.data.Class;
 
 public class JSONUtil {
 
+    /**
+     * Convert the JSON array to an ArrayList of classes.
+     *
+     * @param array JSONArray
+     * @return ArrayList
+     */
     public static ArrayList<Class> jsonArrToClassList(JSONArray array) {
         if (array == null) return new ArrayList<>();
         ArrayList<Class> classes = new ArrayList<>();
@@ -28,6 +34,12 @@ public class JSONUtil {
         return classes;
     }
 
+    /**
+     * Convert the JSON string to an ArrayList of classes.
+     *
+     * @param json JSON string
+     * @return ArrayList
+     */
     public static ArrayList<Class> stringToClassList(String json) {
         if (json == null) return new ArrayList<>();
 
@@ -40,6 +52,12 @@ public class JSONUtil {
         return new ArrayList<>();
     }
 
+    /**
+     * Convert an ArrayList of classes to a JSON array.
+     *
+     * @param classes ArrayList
+     * @return JSONArray
+     */
     public static JSONArray classListToJsonArray(ArrayList<Class> classes) {
         if (classes == null || classes.isEmpty()) return new JSONArray();
         JSONArray json = new JSONArray();

@@ -8,24 +8,24 @@ import android.view.ViewConfiguration;
 
 public class CustomSwipeRefreshLayout extends SwipeRefreshLayout {
 
-    private int mTouchSlop;
-    private float mPrevX;
+    private int touchSlop;
+    private float prevX;
 
     public CustomSwipeRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mPrevX = MotionEvent.obtain(event).getX();
+            prevX = MotionEvent.obtain(event).getX();
         } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
             float eventX = event.getX();
-            float xDiff = Math.abs(eventX - mPrevX);
+            float xDiff = Math.abs(eventX - prevX);
 
-            if (xDiff > mTouchSlop) return false;
+            if (xDiff > touchSlop) return false;
         }
 
         return super.onInterceptTouchEvent(event);

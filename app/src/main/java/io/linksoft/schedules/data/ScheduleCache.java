@@ -24,6 +24,12 @@ public class ScheduleCache {
         load();
     }
 
+    /**
+     * Read the cache file and store the data in memory. If the file does not
+     * exist yet, a new one will be created.
+     *
+     * @return Whether or not loading was successful
+     */
     private boolean load() {
         try {
             if (FileUtil.fileExists(activity, FILE_NAME, FileUtil.TYPE_CACHE)) {
@@ -40,10 +46,24 @@ public class ScheduleCache {
         return true;
     }
 
+    /**
+     * Check if a cache entry is available for the given schedule.
+     *
+     * @param schedule Schedule
+     * @return boolean
+     */
     public boolean has(String schedule) {
         return schedules.has(schedule);
     }
 
+    /**
+     * Retrieve the classes for this schedule from the cache and store them in
+     * the schedule instance. If the cache entry is non-existent, the schedule
+     * will remain unchanged.
+     *
+     * @param schedule Schedule
+     * @return Schedule including classes
+     */
     public Schedule get(Schedule schedule) {
         if (!has(schedule.getCode())) return schedule;
 
@@ -59,6 +79,13 @@ public class ScheduleCache {
         return schedule;
     }
 
+    /**
+     * Write the classes for this schedule to the cache. Old data is ignored
+     * and will be overwritten without warning.
+     *
+     * @param schedule Schedule
+     * @return Schedule data was successfully written
+     */
     public boolean write(Schedule schedule) {
         JSONArray json = JSONUtil.classListToJsonArray(schedule.getClasses());
         if (json.length() <= 0) return false;
@@ -74,6 +101,11 @@ public class ScheduleCache {
         return true;
     }
 
+    /**
+     * Clear ALL schedule cache data.
+     *
+     * @return Cache deleted successfully
+     */
     public boolean clear() {
         return FileUtil.deleteFile(activity, FILE_NAME, FileUtil.TYPE_CACHE);
     }

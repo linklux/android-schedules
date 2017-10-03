@@ -12,6 +12,13 @@ import io.linksoft.schedules.data.Settings;
 
 public class NetUtil {
 
+    /**
+     * Validate the network connection. Supports checking for WiFi only when
+     * this settings has been set to true.
+     *
+     * @param activity Activity
+     * @return Has network connection
+     */
     public static boolean hasNetworkConnection(Activity activity) {
         ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

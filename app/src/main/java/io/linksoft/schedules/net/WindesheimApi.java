@@ -24,14 +24,62 @@ public class WindesheimApi {
         this.activity = activity;
     }
 
+    /**
+     * Make a request to the Windesheim API.
+     *
+     * @param url      Full URL
+     * @param callback Callback when finished
+     * @return Request successful
+     */
+    private boolean makeRequest(String url, okhttp3.Callback callback) {
+        if (!NetUtil.hasNetworkConnection(activity)) return false;
+
+        OkHttpClient client = new OkHttpClient();
+        okhttp3.Request request = new okhttp3.Request.Builder().url(url).build();
+
+        client.newCall(request).enqueue(callback);
+
+        return true;
+    }
+
+    /**
+     * Generate the full URL for the given endpoint.
+     *
+     * @param endPoint Endpoint URL
+     * @param code     Class code
+     * @return Full URL
+     */
+    private String getUrl(String endPoint, String code) {
+        if (code.isEmpty() || !endPoint.contains("{code}"))
+            return BASE_URL + endPoint;
+
+        return BASE_URL + endPoint.replace("{code}", code);
+    }
+
+    /**
+     * Set the callback to be used when a schedule is validated.
+     *
+     * @param validationListener OnScheduleCodeValidatedListener
+     */
     public void setOnScheduleCodeValidatedListener(OnScheduleCodeValidatedListener validationListener) {
         this.validationListener = validationListener;
     }
 
+    /**
+     * Set the callback to be used when a schedule is synced.
+     *
+     * @param syncedListener OnScheduleSyncedListener
+     */
     public void setOnScheduleSyncedListener(OnScheduleSyncedListener syncedListener) {
         this.syncedListener = syncedListener;
     }
 
+    /**
+     * Attempt to sync the given schedule. Since this is an async task, notifying
+     * is achieved via the callback.
+     *
+     * @param schedule Schedule
+     */
     public void syncSchedule(final Schedule schedule) {
         makeRequest(getUrl(EP_CLASS, schedule.getCode()), new okhttp3.Callback() {
             @Override
@@ -57,6 +105,12 @@ public class WindesheimApi {
         });
     }
 
+    /**
+     * Attempt to validate the given schedule. Since this is an async task, notifying
+     * is achieved via the callback.
+     *
+     * @param schedule
+     */
     public void validateSchedule(final Schedule schedule) {
         makeRequest(getUrl(EP_CLASS, schedule.getCode()), new okhttp3.Callback() {
             @Override
@@ -76,24 +130,6 @@ public class WindesheimApi {
                 });
             }
         });
-    }
-
-    private boolean makeRequest(String url, okhttp3.Callback callback) {
-        if (!NetUtil.hasNetworkConnection(activity)) return false;
-
-        OkHttpClient client = new OkHttpClient();
-        okhttp3.Request request = new okhttp3.Request.Builder().url(url).build();
-
-        client.newCall(request).enqueue(callback);
-
-        return true;
-    }
-
-    private String getUrl(String endPoint, String code) {
-        if (code.isEmpty() || !endPoint.contains("{code}"))
-            return BASE_URL + endPoint;
-
-        return BASE_URL + endPoint.replace("{code}", code);
     }
 
     public interface OnScheduleCodeValidatedListener {

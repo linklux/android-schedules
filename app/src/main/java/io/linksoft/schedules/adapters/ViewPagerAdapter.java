@@ -23,12 +23,4 @@ public abstract class ViewPagerAdapter extends FragmentPagerAdapter {
         this.schedules = schedules;
     }
 
-    public int getDisplayWeeks() {
-        return displayWeeks;
-    }
-
-    public void setDisplayWeeks(int displayWeeks) {
-        this.displayWeeks = displayWeeks;
-    }
-
 }

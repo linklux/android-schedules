@@ -34,6 +34,12 @@ public class Settings {
         load();
     }
 
+    /**
+     * Read the settings file and store the data in memory. If the file does
+     * not exist yet, a new one will be created.
+     *
+     * @return Whether or not loading was successful.
+     */
     private boolean load() {
         try {
             if (FileUtil.fileExists(activity, FILE_NAME, FileUtil.TYPE_NORMAL)) {
@@ -48,6 +54,11 @@ public class Settings {
         return true;
     }
 
+    /**
+     * Write any changes to the settings file.
+     *
+     * @return Settings successfully written
+     */
     public boolean save() {
         return FileUtil.writeFile(activity, FILE_NAME, settings.toString(), FileUtil.TYPE_NORMAL);
     }
@@ -68,6 +79,12 @@ public class Settings {
         return (String) value;
     }
 
+    /**
+     * Get a schedule from the settings.
+     *
+     * @param code The schedule code
+     * @return Schedule
+     */
     public Schedule getSchedule(String code) {
         JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
         if (value == null) return null;
@@ -144,6 +161,14 @@ public class Settings {
         return schedules;
     }
 
+    /**
+     * Write an option to the local option data. Be sure to call settings.save()
+     * when done writing all options.
+     *
+     * @param name Option name
+     * @param data Option data
+     * @return Option successfully written
+     */
     public boolean writeOption(String name, String data) {
         try {
             if (getOptionValue(name) != null)
@@ -159,6 +184,13 @@ public class Settings {
         return true;
     }
 
+    /**
+     * Write a schedule to the local schedule list. Be sure to call settings.save()
+     * when done writing all options.
+     *
+     * @param schedule Schedule
+     * @return Schedule successfully written
+     */
     public boolean writeSchedule(Schedule schedule) {
         JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
 
@@ -187,6 +219,13 @@ public class Settings {
         return true;
     }
 
+    /**
+     * Remove a schedule from the local schedule list. Be sure to call
+     * settings.save() when done writing all options.
+     *
+     * @param schedule Schedule
+     * @return Schedule successfully removed
+     */
     public boolean removeSchedule(Schedule schedule) {
         JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
         if (value == null) return false;
@@ -209,6 +248,13 @@ public class Settings {
         return isRemoved;
     }
 
+    /**
+     * Retrieves the value for the given option as a string. If the option does
+     * not exist, null is returned.
+     *
+     * @param name Option name
+     * @return String|null
+     */
     private Object getOptionValue(String name) {
         if (!settings.has(name)) return null;
         Object value = "";

@@ -103,14 +103,14 @@ public class Class implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeStringArray(new String[]{
-                this.id,
-                this.location,
-                String.valueOf(this.timeStart.getTime()),
-                String.valueOf(this.timeEnd.getTime()),
-                this.comments,
-                this.groups,
-                this.className,
-                this.getTutorString()
+            this.id,
+            this.location,
+            String.valueOf(this.timeStart.getTime()),
+            String.valueOf(this.timeEnd.getTime()),
+            this.comments,
+            this.groups,
+            this.className,
+            this.getTutorString()
         });
     }
 

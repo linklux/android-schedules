@@ -108,6 +108,41 @@ public class MainActivity extends AppCompatActivity
         return shouldClose;
     }
 
+    /**
+     * Initialize the ViewPager and / or its adapter if it hasn't been already.
+     * If both are already properly initialized, notify the adapter of a data
+     * change.
+     */
+    public void setPagerView() {
+        // TODO Check if this can be handled by the different pager fragments
+        if (pager == null) {
+            pager = (ViewPager) findViewById(R.id.pager);
+
+            pager.addOnPageChangeListener(this);
+        }
+
+        if (pager.getAdapter() == null) {
+            int displayWeeks = Integer.parseInt(settings.getOption(Settings.PREF_LOAD_WEEKS));
+
+            if (activeView == VIEW_DAY) {
+                pagerAdapter = new DayViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
+            } else if (activeView == VIEW_SCHEDULE) {
+                pagerAdapter = new ScheduleViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
+            }
+
+            pager.setAdapter(pagerAdapter);
+
+            if (activeView != VIEW_DAY) return;
+            Date curDate = DateUtil.getStartOfDay(new Date());
+            curDate = DateUtil.isWeekend(curDate) ? DateUtil.getWeekStart(curDate, 1) : curDate;
+
+            pager.setCurrentItem(pagerAdapter.getItemPosition(curDate));
+            getSupportActionBar().setTitle(DateUtil.getFormattedTime(curDate, DateFormat.LONG));
+        } else {
+            pagerAdapter.notifyDataSetChanged();
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,7 +176,7 @@ public class MainActivity extends AppCompatActivity
         String viewSetting = settings.getOption(Settings.PREF_VIEW);
         activeView = viewSetting.isEmpty() ? VIEW_DAY : Integer.parseInt(viewSetting);
 
-        schedules.set(settings.getSchedules());
+        schedules.add(settings.getSchedules());
     }
 
     @Override
@@ -224,36 +259,6 @@ public class MainActivity extends AppCompatActivity
     public void onDialogActionSubmit(boolean reload) {
         if (reload) {
             reload();
-        }
-    }
-
-    // TODO Check if this can be handled by the different pager fragments
-    public void setPagerView() {
-        if (pager == null) {
-            pager = (ViewPager) findViewById(R.id.pager);
-
-            pager.addOnPageChangeListener(this);
-        }
-
-        if (pager.getAdapter() == null) {
-            int displayWeeks = Integer.parseInt(settings.getOption(Settings.PREF_LOAD_WEEKS));
-
-            if (activeView == VIEW_DAY) {
-                pagerAdapter = new DayViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
-            } else if (activeView == VIEW_SCHEDULE) {
-                pagerAdapter = new ScheduleViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
-            }
-
-            pager.setAdapter(pagerAdapter);
-
-            if (activeView != VIEW_DAY) return;
-            Date curDate = DateUtil.getStartOfDay(new Date());
-            curDate = DateUtil.isWeekend(curDate) ? DateUtil.getWeekStart(curDate, 1) : curDate;
-
-            pager.setCurrentItem(pagerAdapter.getItemPosition(curDate));
-            getSupportActionBar().setTitle(DateUtil.getFormattedTime(curDate, DateFormat.LONG));
-        } else {
-            pagerAdapter.notifyDataSetChanged();
         }
     }
 

@@ -3,8 +3,6 @@ package io.linksoft.schedules.data;
 import java.util.ArrayList;
 import java.util.Date;
 
-import io.linksoft.schedules.R;
-
 public class Schedule {
 
     private String code, label;
@@ -25,10 +23,6 @@ public class Schedule {
 
     public Schedule(String code, String label, boolean enabled) {
         this(code, label, enabled, new Date(0));
-    }
-
-    public int getToggleIcon() {
-        return enabled ? R.drawable.ic_toggle_active : R.drawable.ic_toggle_inactive;
     }
 
     public String getCode() {

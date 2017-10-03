@@ -1,7 +1,6 @@
 package io.linksoft.schedules.util;
 
 import android.app.Activity;
-import android.content.Context;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,6 +13,26 @@ public class FileUtil {
     public static final byte TYPE_NORMAL = 0x01;
     public static final byte TYPE_CACHE = 0x02;
 
+    /**
+     * Get the base directory for storing the given file type.
+     *
+     * @param activity Activity
+     * @param type     File type
+     * @return Base directory as File
+     */
+    private static File getTypeDir(Activity activity, byte type) {
+        return type == TYPE_CACHE ? activity.getCacheDir() : activity.getFilesDir();
+    }
+
+    /**
+     * Attempt to read the given file. Support for regular files and for the
+     * custom cache files.
+     *
+     * @param activity Activity
+     * @param file     Filename
+     * @param type     The file type, this can be either of TYPE_NORMAL or TYPE_CACHE
+     * @return File contents as string
+     */
     public static String readFile(Activity activity, String file, byte type) {
         StringBuilder text = new StringBuilder();
 
@@ -38,10 +57,27 @@ public class FileUtil {
         return text.toString();
     }
 
+    /**
+     * Attempt to read the given file as a regular file.
+     *
+     * @param activity Activity
+     * @param file     Filename
+     * @return File contents as string
+     */
     public static String readFile(Activity activity, String file) {
         return readFile(activity, file, TYPE_NORMAL);
     }
 
+    /**
+     * Attempt to write the data to the given file. Support for regular files
+     * and for the custom cache files.
+     *
+     * @param activity Activity
+     * @param file     File name
+     * @param data     File data
+     * @param type     File type
+     * @return Writing successful
+     */
     public static boolean writeFile(Activity activity, String file, String data, byte type) {
         try {
             FileOutputStream fos = new FileOutputStream(getTypeDir(activity, type) + "/" + file, false);
@@ -57,16 +93,29 @@ public class FileUtil {
         return true;
     }
 
+    /**
+     * Attempt to delete the given file. Support for regular files and for the
+     * custom cache files.
+     *
+     * @param activity Activity
+     * @param file     File name
+     * @param type     File type
+     * @return Deleting successful
+     */
     public static boolean deleteFile(Activity activity, String file, byte type) {
         return new File(getTypeDir(activity, type) + "/" + file).delete();
     }
 
+    /**
+     * Validate whether or not the given file exists.
+     *
+     * @param activity Activity
+     * @param file     File name
+     * @param type     File type
+     * @return File exists
+     */
     public static boolean fileExists(Activity activity, String file, byte type) {
         return (new File(getTypeDir(activity, type) + "/" + file).exists());
-    }
-
-    private static File getTypeDir(Activity activity, byte type) {
-        return type == TYPE_CACHE ? activity.getCacheDir() : activity.getFilesDir();
     }
 
 }
