@@ -47,13 +47,12 @@ public class MainActivity extends AppCompatActivity
 
     private int activeView;
 
-    private ViewPager mPager;
+    private ViewPager pager;
     private CustomSwipeRefreshLayout mSwipeRefreshLayout;
 
     private ViewPagerAdapter pagerAdapter;
 
     private Settings settings;
-
     private SchedulesUtil schedules;
 
     /**
@@ -64,6 +63,49 @@ public class MainActivity extends AppCompatActivity
 
         finish();
         startActivity(intent);
+    }
+
+    /**
+     * Handles a menu item click from the navigation drawer and from the
+     * options menu.
+     *
+     * @param item The clicked menu item
+     *
+     * @return Whether or not the navigation drawer should be closed
+     */
+    private boolean handleMenuAction(MenuItem item) {
+        int id = item.getItemId();
+        boolean shouldClose = true;
+
+        // TODO Might be worth looking into the use of the command pattern here
+        // TODO Remove the deletion handling from the MainActivity
+        if (id == R.id.schedule_add) {
+            AddDialogFragment dialog = new AddDialogFragment();
+
+            dialog.setOnDialogActionListener(this);
+            dialog.show(this);
+        } else if (id == R.id.schedule_manage) {
+            ManageDialogFragment dialog = new ManageDialogFragment();
+
+            dialog.setSchedules(schedules.get());
+            dialog.setOnDialogActionListener(this);
+            dialog.show(this);
+        } else if (id == R.id.schedule_delete) {
+            if (schedules.removeInactive(settings) == 0) {
+                Toast.makeText(this, R.string.toast_none_deleted, Toast.LENGTH_SHORT).show();
+            } else {
+                reload();
+            }
+        } else if (id == R.id.toggle_view) {
+            settings.writeOption("view", String.valueOf((activeView == VIEW_DAY ? VIEW_SCHEDULE : VIEW_DAY)));
+            settings.save();
+
+            reload();
+        } else if (id == R.id.settings_view) {
+            startActivity(new Intent(this, SettingsActivity.class));
+        }
+
+        return shouldClose;
     }
 
     @Override
@@ -122,48 +164,15 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        handleMenuAction(item);
 
-        // TODO Add the actions as defined in the drawer menu here as well
-        return id == R.id.action_settings || super.onOptionsItemSelected(item);
+        return true;
     }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        boolean shouldClose = true;
-
-        // TODO Might be worth looking into the use of the command pattern here
-        // TODO Remove the deletion handling from the MainActivity
-        if (id == R.id.schedule_add) {
-            AddDialogFragment dialog = new AddDialogFragment();
-
-            dialog.setOnDialogActionListener(this);
-            dialog.show(this);
-        } else if (id == R.id.schedule_manage) {
-            ManageDialogFragment dialog = new ManageDialogFragment();
-
-            dialog.setSchedules(schedules.get());
-            dialog.setOnDialogActionListener(this);
-            dialog.show(this);
-        } else if (id == R.id.schedule_delete) {
-            if (schedules.removeInactive(settings) == 0) {
-                Toast.makeText(this, R.string.toast_none_deleted, Toast.LENGTH_SHORT).show();
-            } else {
-                reload();
-            }
-        } else if (id == R.id.toggle_view) {
-            settings.writeOption("view", String.valueOf((activeView == VIEW_DAY ? VIEW_SCHEDULE : VIEW_DAY)));
-            settings.save();
-
-            reload();
-        } else if (id == R.id.settings_view) {
-            startActivity(new Intent(this, SettingsActivity.class));
-        }
-
-        if (shouldClose) {
+        if (handleMenuAction(item))
             ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
-        }
 
         return true;
     }
@@ -220,13 +229,13 @@ public class MainActivity extends AppCompatActivity
 
     // TODO Check if this can be handled by the different pager fragments
     public void setPagerView() {
-        if (mPager == null) {
-            mPager = (ViewPager) findViewById(R.id.pager);
+        if (pager == null) {
+            pager = (ViewPager) findViewById(R.id.pager);
 
-            mPager.addOnPageChangeListener(this);
+            pager.addOnPageChangeListener(this);
         }
 
-        if (mPager.getAdapter() == null) {
+        if (pager.getAdapter() == null) {
             int displayWeeks = Integer.parseInt(settings.getOption(Settings.PREF_LOAD_WEEKS));
 
             if (activeView == VIEW_DAY) {
@@ -235,13 +244,13 @@ public class MainActivity extends AppCompatActivity
                 pagerAdapter = new ScheduleViewPagerAdapter(getSupportFragmentManager(), displayWeeks, schedules.get());
             }
 
-            mPager.setAdapter(pagerAdapter);
+            pager.setAdapter(pagerAdapter);
 
             if (activeView != VIEW_DAY) return;
             Date curDate = DateUtil.getStartOfDay(new Date());
             curDate = DateUtil.isWeekend(curDate) ? DateUtil.getWeekStart(curDate, 1) : curDate;
 
-            mPager.setCurrentItem(pagerAdapter.getItemPosition(curDate));
+            pager.setCurrentItem(pagerAdapter.getItemPosition(curDate));
             getSupportActionBar().setTitle(DateUtil.getFormattedTime(curDate, DateFormat.LONG));
         } else {
             pagerAdapter.notifyDataSetChanged();
