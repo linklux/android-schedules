@@ -2,16 +2,13 @@
 <resources>
     <string name="app_name">Windesheim Roosters</string>
     <string name="nav_action_add">Rooster toevoegen</string>
-    <string name="nav_action_refresh">Roosters verversen</string>
-    <string name="nav_action_remove">Verwijder uitgeschakelde</string>
-    <string name="nav_action_save">Veranderingen opslaan</string>
     <string name="nav_action_settings">Instellingen</string>
     <string name="nav_action_toggle">Toggle weergave</string>
     <string name="navigation_drawer_close">Sluit navigatie</string>
     <string name="navigation_drawer_open">Open navigatie</string>
     <string name="no_schedules">Geen lessen gevonden vandaag</string>
     <string name="title_activity_settings">Instellingen</string>
-    <string name="nav_action_order">Volgorde bijwerken</string>
+    <string name="nav_action_manage">Roosters beheren</string>
     <string name="action_cancel">Annuleren</string>
     <string name="action_save">Opslaan</string>
     <string name="info_schedule_add">Validatie is slechts gedeeltelijk geimplementeerd en autocomplete ontbreekt (nog) volledig. Zorg ervoor dat het goed gespeld is, ook de hoofdletters!</string>
@@ -19,5 +16,8 @@
     <string name="info_class_code">Klascode</string>
     <string name="header_add_schedule">Een rooster toevoegen</string>
     <string name="action_add_schedule">Rooster toevoegen</string>
-    <string name="info_schedule_order">Het orderen van de roosters kan door in onderstaande lijst de klassen in de goede volgorde te slepen.</string>
+    <string name="info_schedule_manage">Het orderen van de roosters kan door in onderstaande lijst de klassen in de goede volgorde te slepen.</string>
+    <string name="header_manage_schedule">Roosters beheren</string>
+    <string name="nav_action_delete">Verwijder inactieve roosters</string>
+    <string name="toast_none_deleted">Geen inactieve roosters gevonden</string>
 </resources>

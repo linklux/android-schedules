@@ -17,25 +17,41 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 import io.linksoft.schedules.R;
-import io.linksoft.schedules.adapters.OrderItemAdapter;
+import io.linksoft.schedules.adapters.ManageItemAdapter;
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
 
-public class OrderDialogFragment extends BaseDialogFragment {
+public class ManageDialogFragment extends BaseDialogFragment {
 
     private String scheduleOrder;
-    private ArrayList<Pair<Long, String>> schedules;
+    private ArrayList<Pair<Long, Schedule>> schedules;
 
     /**
      * Updates the schedule order string.
      */
-    private void setScheduleOrder () {
+    private void setScheduleOrder() {
         int i = 0;
         scheduleOrder = "";
 
-        for (Pair<Long, String> pair : schedules) {
-            scheduleOrder += pair.second + (i++ < schedules.size() - 1 ? "," : "");
+        for (Pair<Long, Schedule> pair : schedules) {
+            scheduleOrder += pair.second.getCode() + (i++ < schedules.size() - 1 ? "," : "");
         }
+    }
+
+    /**
+     * Write the schedule data to the settings file.
+     */
+    private void save() {
+        Settings settings = new Settings(getActivity());
+
+        // Write the schedule order string
+        settings.writeOption(Settings.PREF_SCHEDULE_ORDER, scheduleOrder);
+
+        // Write all schedules to handle updates in enabled status
+        for (Pair<Long, Schedule> pair : schedules)
+            settings.writeSchedule(pair.second);
+
+        settings.save();
     }
 
     /**
@@ -48,13 +64,13 @@ public class OrderDialogFragment extends BaseDialogFragment {
         long i = 0;
 
         for (Schedule schedule : schedules.values()) {
-            this.schedules.add(new Pair<>(i++, schedule.getCode()));
+            this.schedules.add(new Pair<>(i++, schedule));
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_order_dialog, container, false);
+        View v = inflater.inflate(R.layout.fragment_manage_dialog, container, false);
         DragListView dragListView = (DragListView) v.findViewById(R.id.drag_list_view);
 
         dragListView.getRecyclerView().setVerticalScrollBarEnabled(true);
@@ -67,22 +83,20 @@ public class OrderDialogFragment extends BaseDialogFragment {
             }
         });
 
-        OrderItemAdapter listAdapter = new OrderItemAdapter(schedules, R.layout.list_order_item, R.id.order_grab_drag_handle);
+        ManageItemAdapter listAdapter = new ManageItemAdapter(schedules, R.layout.list_manage_item, R.id.manage_grab_drag_handle);
         dragListView.setAdapter(listAdapter, false);
 
         dragListView.setLayoutManager(new LinearLayoutManager(v.getContext()));
         dragListView.setCanDragHorizontally(false);
-        dragListView.setCustomDragItem(new MyDragItem(v.getContext(), R.layout.list_order_item));
+        dragListView.setCustomDragItem(new MyDragItem(v.getContext(), R.layout.list_manage_item));
 
-        final Button btnSave = (Button) v.findViewById(R.id.order_dialog_save);
-        final Button btnCancel = (Button) v.findViewById(R.id.order_dialog_cancel);
+        final Button btnSave = (Button) v.findViewById(R.id.manage_dialog_save);
+        final Button btnCancel = (Button) v.findViewById(R.id.manage_dialog_cancel);
 
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Settings settings = new Settings(getActivity());
-                settings.writeOption(Settings.PREF_SCHEDULE_ORDER, scheduleOrder);
-                settings.save();
+                save();
 
                 listener.onDialogActionSubmit(true);
             }
@@ -108,9 +122,9 @@ public class OrderDialogFragment extends BaseDialogFragment {
 
         @Override
         public void onBindDragView(View clickedView, View dragView) {
-            CharSequence text = ((TextView) clickedView.findViewById(R.id.order_list_label)).getText();
-            ((TextView) dragView.findViewById(R.id.order_list_label)).setText(text);
-            dragView.findViewById(R.id.order_grab_drag_handle).setElevation(5f);
+            CharSequence text = ((TextView) clickedView.findViewById(R.id.manage_list_label)).getText();
+            ((TextView) dragView.findViewById(R.id.manage_list_label)).setText(text);
+            dragView.findViewById(R.id.manage_grab_drag_handle).setElevation(5f);
         }
 
     }

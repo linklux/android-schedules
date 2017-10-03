@@ -14,15 +14,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.HeaderViewListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import io.linksoft.schedules.adapters.DayViewPagerAdapter;
 import io.linksoft.schedules.adapters.ScheduleViewPagerAdapter;
@@ -32,7 +27,7 @@ import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.fragments.AddDialogFragment;
 import io.linksoft.schedules.fragments.BaseDialogFragment;
 import io.linksoft.schedules.fragments.DayViewPagerFragment;
-import io.linksoft.schedules.fragments.OrderDialogFragment;
+import io.linksoft.schedules.fragments.ManageDialogFragment;
 import io.linksoft.schedules.layouts.CustomSwipeRefreshLayout;
 import io.linksoft.schedules.net.WindesheimApi;
 import io.linksoft.schedules.util.DateUtil;
@@ -60,6 +55,16 @@ public class MainActivity extends AppCompatActivity
     private Settings settings;
 
     private SchedulesUtil schedules;
+
+    /**
+     * Simple activity reload.
+     */
+    private void reload() {
+        Intent intent = getIntent();
+
+        finish();
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +99,7 @@ public class MainActivity extends AppCompatActivity
         String viewSetting = settings.getOption(Settings.PREF_VIEW);
         activeView = viewSetting.isEmpty() ? VIEW_DAY : Integer.parseInt(viewSetting);
 
-        registerSchedules();
+        schedules.set(settings.getSchedules());
     }
 
     @Override
@@ -129,22 +134,24 @@ public class MainActivity extends AppCompatActivity
         boolean shouldClose = true;
 
         // TODO Might be worth looking into the use of the command pattern here
+        // TODO Remove the deletion handling from the MainActivity
         if (id == R.id.schedule_add) {
             AddDialogFragment dialog = new AddDialogFragment();
 
             dialog.setOnDialogActionListener(this);
             dialog.show(this);
-        } else if (id == R.id.schedule_order) {
-            OrderDialogFragment dialog = new OrderDialogFragment();
+        } else if (id == R.id.schedule_manage) {
+            ManageDialogFragment dialog = new ManageDialogFragment();
 
             dialog.setSchedules(schedules.get());
             dialog.setOnDialogActionListener(this);
             dialog.show(this);
-        } else if (id == R.id.schedule_save) {
-            reload();
-        } else if (id == R.id.schedules_remove) {
-            schedules.removeInactive(settings);
-            reload();
+        } else if (id == R.id.schedule_delete) {
+            if (schedules.removeInactive(settings) == 0) {
+                Toast.makeText(this, R.string.toast_none_deleted, Toast.LENGTH_SHORT).show();
+            } else {
+                reload();
+            }
         } else if (id == R.id.toggle_view) {
             settings.writeOption("view", String.valueOf((activeView == VIEW_DAY ? VIEW_SCHEDULE : VIEW_DAY)));
             settings.save();
@@ -152,13 +159,11 @@ public class MainActivity extends AppCompatActivity
             reload();
         } else if (id == R.id.settings_view) {
             startActivity(new Intent(this, SettingsActivity.class));
-        } else if (id == 0) {
-            shouldClose = false;
-            if (!handleScheduleClick(item)) return false;
         }
 
-        if (shouldClose)
+        if (shouldClose) {
             ((DrawerLayout) findViewById(R.id.drawer_layout)).closeDrawer(GravityCompat.START);
+        }
 
         return true;
     }
@@ -241,61 +246,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             pagerAdapter.notifyDataSetChanged();
         }
-    }
-
-    private void registerSchedules() {
-        schedules.set(settings.getSchedules());
-
-        Menu subMenu = ((NavigationView) findViewById(R.id.nav_view)).getMenu().addSubMenu("Current schedules");
-        int itemID = schedules.size() - 1;
-
-        for (Map.Entry<String, Schedule> entry : schedules.get().entrySet()) {
-            MenuItem item = subMenu.add(0, Menu.NONE, itemID--, entry.getValue().getCode());
-            item.setIcon(entry.getValue().getToggleIcon());
-        }
-    }
-
-    // TODO Move enabling / disabling schedules to a more sensible place, instead of the navigation drawer
-    private boolean handleScheduleClick(MenuItem item) {
-        String title = item.getTitle().toString();
-        if (!schedules.has(title)) return false;
-
-        Schedule schedule = schedules.get(title);
-
-        schedule.setEnabled(!schedule.isEnabled());
-        item.setIcon(schedule.getToggleIcon());
-
-        settings.writeSchedule(schedule);
-        settings.save();
-
-        refreshMenu();
-
-        return true;
-    }
-
-    private void refreshMenu() {
-        NavigationView mNavigationView = (NavigationView) findViewById(R.id.nav_view);
-
-        for (int i = 0, count = mNavigationView.getChildCount(); i < count; i++) {
-            final View child = mNavigationView.getChildAt(i);
-            if (child == null || !(child instanceof ListView)) continue;
-
-            final ListView menuView = (ListView) child;
-            final HeaderViewListAdapter adapter = (HeaderViewListAdapter) menuView.getAdapter();
-            final BaseAdapter wrapped = (BaseAdapter) adapter.getWrappedAdapter();
-
-            wrapped.notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Simple activity reload.
-     */
-    private void reload() {
-        Intent intent = getIntent();
-
-        finish();
-        startActivity(intent);
     }
 
 }

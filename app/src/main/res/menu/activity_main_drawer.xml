@@ -5,17 +5,13 @@
         android:icon="@drawable/ic_add"
         android:title="@string/nav_action_add"/>
     <item
-        android:id="@+id/schedule_order"
-        android:icon="@drawable/ic_reorder"
-        android:title="@string/nav_action_order"/>
+        android:id="@+id/schedule_manage"
+        android:icon="@android:drawable/ic_menu_preferences"
+        android:title="@string/nav_action_manage"/>
     <item
-        android:id="@+id/schedule_save"
-        android:icon="@drawable/ic_save"
-        android:title="@string/nav_action_save"/>
-    <item
-        android:id="@+id/schedules_remove"
+        android:id="@+id/schedule_delete"
         android:icon="@drawable/ic_delete"
-        android:title="@string/nav_action_remove"/>
+        android:title="@string/nav_action_delete"/>
     <item
         android:id="@+id/toggle_view"
         android:icon="@drawable/ic_toggle_view"
@@ -24,5 +20,4 @@
         android:id="@+id/settings_view"
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/nav_action_settings"/>
-
 </menu>

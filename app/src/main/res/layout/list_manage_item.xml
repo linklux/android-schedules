@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="2dp"
-    android:id="@+id/order_grab_drag_handle"
+    android:id="@+id/manage_grab_drag_handle"
     app:swipeViewId="@+id/item_layout">
 
     <LinearLayout
@@ -18,18 +18,17 @@
         android:layout_marginBottom="@dimen/card_margin"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/order_list_image"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/ic_app_logo"/>
+        <CheckBox
+            android:id="@+id/manage_list_enabled"
+            android:layout_width="32dp"
+            android:layout_height="32dp"/>
 
         <TextView
-            android:id="@+id/order_list_label"
+            android:id="@+id/manage_list_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/colorDark"
-            android:paddingLeft="@dimen/text_margin"/>
+            android:paddingLeft="8dp"/>
 
     </LinearLayout>
 

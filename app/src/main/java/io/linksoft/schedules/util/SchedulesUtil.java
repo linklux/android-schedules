@@ -66,16 +66,32 @@ public class SchedulesUtil {
         return schedules.size();
     }
 
-    public void removeInactive(Settings settings) {
-        for (Map.Entry<String, Schedule> entry : schedules.entrySet())
-            if (!entry.getValue().isEnabled())
+    /**
+     * Removes all inactive schedules and returns the deletion counter.
+     *
+     * @param settings Settings
+     *
+     * @return The amount of deleted schedules
+     */
+    public int removeInactive(Settings settings) {
+        int deleteCount = 0;
+
+        for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
+            if (!entry.getValue().isEnabled()) {
                 settings.removeSchedule(entry.getValue());
 
+                deleteCount++;
+            }
+        }
+
         settings.save();
+
+        return deleteCount;
     }
 
     public boolean shouldSync(String schedule) {
-        if (!FileUtil.fileExists(activity, ScheduleCache.FILE_NAME, FileUtil.TYPE_CACHE)) return true;
+        if (!FileUtil.fileExists(activity, ScheduleCache.FILE_NAME, FileUtil.TYPE_CACHE))
+            return true;
 
         return new Date().after(DateUtil.getDateByDayOffset(get(schedule).getSyncTime(), ScheduleCache.CACHE_DAYS));
     }

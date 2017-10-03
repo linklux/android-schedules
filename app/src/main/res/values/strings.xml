@@ -9,19 +9,20 @@
     <string name="action_add_schedule">Add schedule</string>
 
     <string name="header_add_schedule">Add a schedule</string>
+    <string name="header_manage_schedule">Schedule manager</string>
 
-    <string name="info_schedule_order">Reordering the schedules can be done by dragging and dropping the items in the list below.</string>
+    <string name="info_schedule_manage">Reordering the schedules can be done by dragging and dropping the items in the list below.</string>
     <string name="info_schedule_add">Validation is partially implemented, auto-complete has yet to come. Please be sure to spell it correctly (capitalization matters!).</string>
     <string name="info_class_code">Class code</string>
     <string name="info_class_label">Class label</string>
 
     <string name="nav_action_settings">Settings</string>
     <string name="nav_action_add">Add schedule</string>
-    <string name="nav_action_order">Change order</string>
-    <string name="nav_action_refresh">Refresh schedules</string>
-    <string name="nav_action_save">Save changes</string>
-    <string name="nav_action_remove">Remove inactive</string>
+    <string name="nav_action_delete">Delete inactive schedules</string>
+    <string name="nav_action_manage">Manage schedules</string>
     <string name="nav_action_toggle">Toggle view</string>
+
+    <string name="toast_none_deleted">No inactive schedules found</string>
 
     <string name="project_author" translatable="false">Leon Kolthoff</string>
     <string name="project_links" translatable="false">Schedules | github.com/linklux</string>
