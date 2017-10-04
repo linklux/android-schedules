@@ -14,7 +14,7 @@ public class ManageItemViewHolder extends DragItemAdapter.ViewHolder  {
     public final CheckBox cbxEnabled;
 
     public ManageItemViewHolder(final View itemView, final int grabHandleID) {
-        super(itemView, grabHandleID, true);
+        super(itemView, grabHandleID, false);
 
         txtLabel = (TextView) itemView.findViewById(R.id.manage_list_label);
         cbxEnabled = (CheckBox) itemView.findViewById(R.id.manage_list_enabled);
