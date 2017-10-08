@@ -2,20 +2,20 @@
 <com.woxthebox.draglistview.swipe.ListSwipeItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/manage_grab_drag_handle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:elevation="2dp"
-    android:id="@+id/manage_grab_drag_handle"
+    android:layout_marginTop="@dimen/card_margin"
+    android:layout_marginBottom="@dimen/card_margin"
+    android:background="@color/cardview_light_background"
+    android:elevation="1dp"
     app:swipeViewId="@+id/item_layout">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/cardview_light_background"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/card_margin"
-        android:layout_marginBottom="@dimen/card_margin"
         android:padding="16dp">
 
         <CheckBox
@@ -27,9 +27,19 @@
             android:id="@+id/manage_list_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/manage_list_enabled"
             android:textColor="@color/colorDark"
-            android:paddingLeft="8dp"/>
+            android:paddingLeft="8dp"
+            android:layout_marginTop="8dp"/>
 
-    </LinearLayout>
+        <ImageButton
+            android:id="@+id/manage_list_delete"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/ic_delete"
+            android:backgroundTint="@color/transparent"/>
+
+    </RelativeLayout>
 
 </com.woxthebox.draglistview.swipe.ListSwipeItem>

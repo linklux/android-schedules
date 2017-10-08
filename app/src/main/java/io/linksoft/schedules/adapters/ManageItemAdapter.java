@@ -18,12 +18,23 @@ public class ManageItemAdapter extends DragItemAdapter<Pair<Long, Schedule>, Man
     private int layoutID;
     private int grabHandleID;
 
+    private OnScheduleDeleteListener listener;
+
     public ManageItemAdapter(ArrayList<Pair<Long, Schedule>> list, int layoutID, int grabHandleID) {
         this.layoutID = layoutID;
         this.grabHandleID = grabHandleID;
 
         setHasStableIds(true);
         setItemList(list);
+    }
+
+    /**
+     * Set the callback instance for schedule delete actions.
+     *
+     * @param listener OnScheduleDeleteListener
+     */
+    public void setOnScheduleDeleteListener(OnScheduleDeleteListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -50,11 +61,22 @@ public class ManageItemAdapter extends DragItemAdapter<Pair<Long, Schedule>, Man
                 mItemList.set(position, new Pair<>((long) position, schedule));
             }
         });
+
+        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listener.onScheduleDelete(holder, schedule);
+            }
+        });
     }
 
     @Override
     public long getItemId(int position) {
         return mItemList.get(position).first;
+    }
+
+    public interface OnScheduleDeleteListener {
+        void onScheduleDelete(ManageItemViewHolder holder, Schedule schedule);
     }
 
 }

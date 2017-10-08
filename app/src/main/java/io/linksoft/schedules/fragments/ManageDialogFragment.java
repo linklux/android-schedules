@@ -14,17 +14,21 @@ import com.woxthebox.draglistview.DragItem;
 import com.woxthebox.draglistview.DragListView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import io.linksoft.schedules.R;
 import io.linksoft.schedules.adapters.ManageItemAdapter;
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
+import io.linksoft.schedules.util.SchedulesUtil;
+import io.linksoft.schedules.viewholders.ManageItemViewHolder;
 
-public class ManageDialogFragment extends BaseDialogFragment {
+public class ManageDialogFragment extends BaseDialogFragment implements ManageItemAdapter.OnScheduleDeleteListener {
 
     private String scheduleOrder;
     private ArrayList<Pair<Long, Schedule>> schedules;
+    private HashMap<String, Schedule> schedulesDelete;
 
     /**
      * Updates the schedule order string.
@@ -44,12 +48,17 @@ public class ManageDialogFragment extends BaseDialogFragment {
     private void save() {
         Settings settings = new Settings(getActivity());
 
-        // Write the schedule order string
-        settings.writeOption(Settings.PREF_SCHEDULE_ORDER, scheduleOrder);
-
-        // Write all schedules to handle updates in enabled status
+        // Write all schedules to handle property updates
         for (Pair<Long, Schedule> pair : schedules)
             settings.writeSchedule(pair.second);
+
+        // Delete inactive schedules if present
+        for (Schedule schedule : schedulesDelete.values())
+            settings.removeSchedule(schedule);
+
+        // Write the schedule order string
+        setScheduleOrder();
+        settings.writeOption(Settings.PREF_SCHEDULE_ORDER, scheduleOrder);
 
         settings.save();
     }
@@ -57,10 +66,12 @@ public class ManageDialogFragment extends BaseDialogFragment {
     /**
      * Set the schedules to be displayed in the reorder list.
      *
-     * @param schedules LinkedHashMap<String, Schedule>
+     * @param schedules SchedulesUtil
      */
     public void setSchedules(LinkedHashMap<String, Schedule> schedules) {
         this.schedules = new ArrayList<>(schedules.size());
+        this.schedulesDelete = new HashMap<>(schedules.size());
+
         long i = 0;
 
         for (Schedule schedule : schedules.values()) {
@@ -84,6 +95,7 @@ public class ManageDialogFragment extends BaseDialogFragment {
         });
 
         ManageItemAdapter listAdapter = new ManageItemAdapter(schedules, R.layout.list_manage_item, R.id.manage_grab_drag_handle);
+        listAdapter.setOnScheduleDeleteListener(this);
         dragListView.setAdapter(listAdapter, false);
 
         dragListView.setLayoutManager(new LinearLayoutManager(v.getContext()));
@@ -112,6 +124,18 @@ public class ManageDialogFragment extends BaseDialogFragment {
         setScheduleOrder();
 
         return v;
+    }
+
+    @Override
+    public void onScheduleDelete(ManageItemViewHolder holder, Schedule schedule) {
+        boolean isRemoved = !schedulesDelete.containsKey(schedule.getCode());
+        holder.lsiContainer.setBackgroundColor(isRemoved ? 0xBCF44242 : 0xFFFFFFFF);
+
+        if (isRemoved) {
+            schedulesDelete.put(schedule.getCode(), schedule);
+        } else {
+            schedulesDelete.remove(schedule.getCode());
+        }
     }
 
     private static class MyDragItem extends DragItem {

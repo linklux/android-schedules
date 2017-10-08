@@ -9,10 +9,6 @@
         android:icon="@android:drawable/ic_menu_preferences"
         android:title="@string/nav_action_manage"/>
     <item
-        android:id="@+id/schedule_delete"
-        android:icon="@drawable/ic_delete"
-        android:title="@string/nav_action_delete"/>
-    <item
         android:id="@+id/toggle_view"
         android:icon="@drawable/ic_toggle_view"
         android:title="@string/nav_action_toggle"/>

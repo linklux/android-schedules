@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity
         boolean shouldClose = true;
 
         // TODO Might be worth looking into the use of the command pattern here
-        // TODO Remove the deletion handling from the MainActivity
         if (id == R.id.schedule_add) {
             AddDialogFragment dialog = new AddDialogFragment();
 
@@ -90,12 +89,6 @@ public class MainActivity extends AppCompatActivity
             dialog.setSchedules(schedules.get());
             dialog.setOnDialogActionListener(this);
             dialog.show(this);
-        } else if (id == R.id.schedule_delete) {
-            if (schedules.removeInactive(settings) == 0) {
-                Toast.makeText(this, R.string.toast_none_deleted, Toast.LENGTH_SHORT).show();
-            } else {
-                reload();
-            }
         } else if (id == R.id.toggle_view) {
             settings.writeOption("view", String.valueOf((activeView == VIEW_DAY ? VIEW_SCHEDULE : VIEW_DAY)));
             settings.save();
