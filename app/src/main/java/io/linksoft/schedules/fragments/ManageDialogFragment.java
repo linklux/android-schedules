@@ -38,6 +38,9 @@ public class ManageDialogFragment extends BaseDialogFragment implements ManageIt
         scheduleOrder = "";
 
         for (Pair<Long, Schedule> pair : schedules) {
+            // Skip the schedule if it will be deleted
+            if (schedulesDelete.containsKey(pair.second.getCode())) continue;
+
             scheduleOrder += pair.second.getCode() + (i++ < schedules.size() - 1 ? "," : "");
         }
     }

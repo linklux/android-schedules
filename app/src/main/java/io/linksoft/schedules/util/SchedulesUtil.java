@@ -9,7 +9,6 @@ import java.util.Map;
 import io.linksoft.schedules.MainActivity;
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.ScheduleCache;
-import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.net.WindesheimApi;
 
 public class SchedulesUtil {
@@ -105,28 +104,6 @@ public class SchedulesUtil {
     }
 
     /**
-     * Removes all inactive schedules and returns the deletion counter.
-     *
-     * @param settings Settings
-     * @return The amount of deleted schedules
-     */
-    public int removeInactive(Settings settings) {
-        int deleteCount = 0;
-
-        for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
-            if (!entry.getValue().isEnabled()) {
-                settings.removeSchedule(entry.getValue());
-
-                deleteCount++;
-            }
-        }
-
-        settings.save();
-
-        return deleteCount;
-    }
-
-    /**
      * Determined if a schedule should be synced or not. A schedule 'needs' a
      * sync when the last sync was more than CACHE_DAYS ago.
      *
@@ -184,7 +161,7 @@ public class SchedulesUtil {
      * Write schedule class list to the cache.
      *
      * @param schedule Schedule code
-     * @return Wrting successful
+     * @return Writing successful
      */
     public boolean writeToCache(String schedule) {
         return has(schedule) && cache.write(get(schedule));
