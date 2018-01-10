@@ -13,6 +13,7 @@ import io.linksoft.schedules.R;
 public class ManageItemViewHolder extends DragItemAdapter.ViewHolder  {
 
     public final ListSwipeItem lsiContainer;
+    public final ImageButton btnGrabHandle;
     public final TextView txtLabel;
     public final CheckBox cbxEnabled;
     public final ImageButton btnDelete;
@@ -20,7 +21,8 @@ public class ManageItemViewHolder extends DragItemAdapter.ViewHolder  {
     public ManageItemViewHolder(final View itemView, final int grabHandleID) {
         super(itemView, grabHandleID, false);
 
-        lsiContainer = (ListSwipeItem) itemView.findViewById(R.id.manage_grab_drag_handle);
+        lsiContainer = (ListSwipeItem) itemView.findViewById(R.id.manage_item_container);
+        btnGrabHandle = (ImageButton) itemView.findViewById(R.id.manage_grab_drag_handle);
         txtLabel = (TextView) itemView.findViewById(R.id.manage_list_label);
         cbxEnabled = (CheckBox) itemView.findViewById(R.id.manage_list_enabled);
         btnDelete = (ImageButton) itemView.findViewById(R.id.manage_list_delete);

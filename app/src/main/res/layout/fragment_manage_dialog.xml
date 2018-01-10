@@ -2,55 +2,72 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/colorLight"
     android:padding="@dimen/text_margin"
-    tools:context="io.linksoft.schedules.fragments.AddDialogFragment">
+    tools:context="io.linksoft.schedules.fragments.ManageDialogFragment">
 
-    <TextView
-        android:id="@+id/manage_dialog_header"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/text_margin"
-        android:text="@string/header_manage_schedule"
-        android:textColor="@color/colorDark"
-        android:textSize="14dp"
-        android:textStyle="bold"/>
+        android:layout_above="@+id/manage_dialog_action_container">
 
-    <TextView
-        android:id="@+id/manage_dialog_info"
+        <TextView
+            android:id="@+id/manage_dialog_header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/text_margin"
+            android:text="@string/header_manage_schedule"
+            android:textColor="@color/colorDark"
+            android:textSize="14dp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/manage_dialog_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/manage_dialog_header"
+            android:textColor="@color/colorDark"
+            android:layout_marginBottom="@dimen/text_margin"
+            android:text="@string/info_schedule_manage"/>
+
+        <LinearLayout
+            android:id="@+id/drag_list_view_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/manage_dialog_info"
+            android:orientation="horizontal">
+
+            <com.woxthebox.draglistview.DragListView
+                android:id="@+id/drag_list_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/manage_dialog_action_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/manage_dialog_header"
-        android:textColor="@color/colorDark"
-        android:layout_marginBottom="@dimen/text_margin"
-        android:text="@string/info_schedule_manage"/>
+        android:layout_alignParentBottom="true">
 
-    <com.woxthebox.draglistview.DragListView
-        android:id="@+id/drag_list_view"
-        android:layout_width="match_parent"
-        android:layout_below="@+id/manage_dialog_info"
-        android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/manage_dialog_cancel"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/text_margin"
+            android:text="@string/action_cancel"
+            android:textColor="@color/colorPrimary"/>
 
-    <Button
-        android:id="@+id/manage_dialog_cancel"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@+id/drag_list_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/text_margin"
-        android:text="@string/action_cancel"
-        android:textColor="@color/colorPrimary"/>
-
-    <Button
-        android:id="@+id/manage_dialog_save"
-        style="?android:attr/borderlessButtonStyle"
-        android:layout_below="@+id/drag_list_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="@dimen/text_margin"
-        android:text="@string/action_save"
-        android:textColor="@color/colorPrimary"/>
-
+        <Button
+            android:id="@+id/manage_dialog_save"
+            style="?android:attr/borderlessButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="@dimen/text_margin"
+            android:text="@string/action_save"
+            android:textColor="@color/colorPrimary"/>
+    </RelativeLayout>
 </RelativeLayout>

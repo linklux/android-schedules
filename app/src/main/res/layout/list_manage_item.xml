@@ -2,7 +2,7 @@
 <com.woxthebox.draglistview.swipe.ListSwipeItem
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/manage_grab_drag_handle"
+    android:id="@+id/manage_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginTop="@dimen/card_margin"
@@ -18,19 +18,27 @@
         android:orientation="horizontal"
         android:padding="16dp">
 
-        <CheckBox
-            android:id="@+id/manage_list_enabled"
+        <ImageButton
+            android:id="@+id/manage_grab_drag_handle"
             android:layout_width="32dp"
-            android:layout_height="32dp"/>
+            android:layout_height="32dp"
+            android:src="@drawable/ic_reorder"
+            android:backgroundTint="@color/transparent"/>
 
         <TextView
             android:id="@+id/manage_list_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/manage_list_enabled"
+            android:layout_toRightOf="@+id/manage_grab_drag_handle"
             android:textColor="@color/colorDark"
             android:paddingLeft="8dp"
             android:layout_marginTop="8dp"/>
+
+        <CheckBox
+            android:id="@+id/manage_list_enabled"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_toLeftOf="@+id/manage_list_delete"/>
 
         <ImageButton
             android:id="@+id/manage_list_delete"

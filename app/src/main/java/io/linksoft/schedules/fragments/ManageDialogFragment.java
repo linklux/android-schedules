@@ -21,7 +21,6 @@ import io.linksoft.schedules.R;
 import io.linksoft.schedules.adapters.ManageItemAdapter;
 import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
-import io.linksoft.schedules.util.SchedulesUtil;
 import io.linksoft.schedules.viewholders.ManageItemViewHolder;
 
 public class ManageDialogFragment extends BaseDialogFragment implements ManageItemAdapter.OnScheduleDeleteListener {
