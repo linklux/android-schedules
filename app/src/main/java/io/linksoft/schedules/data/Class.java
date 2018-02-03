@@ -2,6 +2,7 @@ package io.linksoft.schedules.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -84,15 +85,7 @@ public class Class implements Parcelable {
     }
 
     public String getTutorString() {
-        StringBuilder tutorStrBuilder = new StringBuilder();
-
-        for (String n : tutors)
-            tutorStrBuilder.append(n.replace("'", "\\'")).append("|");
-
-        if (tutorStrBuilder.length() > 0)
-            tutorStrBuilder.deleteCharAt(tutorStrBuilder.length() - 1);
-
-        return tutorStrBuilder.toString();
+        return TextUtils.join(", ", tutors);
     }
 
     @Override

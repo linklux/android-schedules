@@ -39,4 +39,40 @@
         android:layout_margin="@dimen/margin_item_content"
         android:textColor="@color/colorDarkT"/>
 
+    <net.cachapa.expandablelayout.ExpandableLayout
+        android:id="@+id/expandable_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/class_item_name">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/class_item_extra_separator"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/cardview_light_background"/>
+
+            <TextView
+                android:id="@+id/class_item_tutors"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_item_content"
+                android:layout_marginBottom="0dp"
+                android:textColor="@color/colorDarkT"/>
+
+            <TextView
+                android:id="@+id/class_item_comments"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_item_content"
+                android:layout_marginTop="0dp"
+                android:textColor="@color/colorDarkT"/>
+        </LinearLayout>
+
+    </net.cachapa.expandablelayout.ExpandableLayout>
+
 </RelativeLayout>

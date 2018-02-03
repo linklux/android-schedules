@@ -43,14 +43,21 @@ public class ClassSection extends StatelessSection {
             itemHolder.location.setText(R.string.cheering);
             itemHolder.name.setVisibility(View.GONE);
 
+            itemHolder.extraInfoEnabled = false;
+
             return;
         }
 
         Class cls = classes.get(position);
 
+        // Set base data.
         itemHolder.timeFrame.setText(DateUtil.getClassTimeframe(cls.getTimeStart(), cls.getTimeEnd()));
         itemHolder.location.setText(cls.getLocation());
         itemHolder.name.setText(String.format("%s - %s", cls.getClassName(), cls.getComments()));
+
+        // Set extra data which is shown on click.
+        itemHolder.tutors.setText(cls.getTutorString());
+        itemHolder.comments.setText(cls.getGroups());
     }
 
     @Override
