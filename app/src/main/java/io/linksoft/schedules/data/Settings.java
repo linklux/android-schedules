@@ -1,7 +1,6 @@
 package io.linksoft.schedules.data;
 
-import android.app.Activity;
-import android.preference.PreferenceManager;
+import android.content.SharedPreferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,11 +23,11 @@ public class Settings {
 
     private static final String FILE_NAME = "settings.json";
 
-    private Activity activity;
     private JSONObject settings;
 
-    public Settings(Activity activity) {
-        this.activity = activity;
+    private SharedPreferences preferences;
+
+    public Settings() {
         this.settings = new JSONObject();
 
         load();
@@ -42,8 +41,8 @@ public class Settings {
      */
     private boolean load() {
         try {
-            if (FileUtil.fileExists(activity, FILE_NAME, FileUtil.TYPE_NORMAL)) {
-                settings = new JSONObject(FileUtil.readFile(activity, FILE_NAME));
+            if (FileUtil.fileExists(FILE_NAME, FileUtil.TYPE_NORMAL)) {
+                settings = new JSONObject(FileUtil.readFile(FILE_NAME));
             } else {
                 settings = new JSONObject();
             }
@@ -60,7 +59,7 @@ public class Settings {
      * @return Settings successfully written
      */
     public boolean save() {
-        return FileUtil.writeFile(activity, FILE_NAME, settings.toString(), FileUtil.TYPE_NORMAL);
+        return FileUtil.writeFile(FILE_NAME, settings.toString(), FileUtil.TYPE_NORMAL);
     }
 
     /**
@@ -73,8 +72,11 @@ public class Settings {
     public String getOption(String name) {
         Object value = getOptionValue(name);
 
-        if (value == null)
-            value = PreferenceManager.getDefaultSharedPreferences(activity).getString(name, "");
+        if (value == null && preferences != null) {
+            value = preferences.getString(name, "");
+        } else if (preferences == null) {
+            value = "Unknown!";
+        }
 
         return (String) value;
     }
@@ -87,7 +89,9 @@ public class Settings {
      */
     public Schedule getSchedule(String code) {
         JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
-        if (value == null) return null;
+        if (value == null) {
+            return null;
+        }
 
         Schedule schedule = null;
 
@@ -126,7 +130,9 @@ public class Settings {
      */
     public Schedule[] getSchedules() {
         JSONArray value = (JSONArray) getOptionValue(PREF_SCHEDULE_LIST);
-        if (value == null) return new Schedule[0];
+        if (value == null) {
+            return new Schedule[0];
+        }
 
         String[] sortOrder = getOption(PREF_SCHEDULE_ORDER).split(",");
         Schedule[] schedules = new Schedule[value.length()];
@@ -137,7 +143,9 @@ public class Settings {
                 String key = sortOrder[i];
 
                 for (int j = 0; j < schedules.length; j++) {
-                    if (i >= schedules.length || schedules[i] != null) continue;
+                    if (i >= schedules.length || schedules[i] != null) {
+                        continue;
+                    }
 
                     String code = value.getJSONObject(j).getString("code");
                     if (code.equals(key)) {
@@ -149,7 +157,9 @@ public class Settings {
             }
 
             for (int i = 0; i < schedules.length; i++) {
-                if (schedules[i] != null) continue;
+                if (schedules[i] != null) {
+                    continue;
+                }
 
                 String code = value.getJSONObject(i).getString("code");
                 schedules[i] = getSchedule(code);
@@ -266,6 +276,14 @@ public class Settings {
         }
 
         return value;
+    }
+
+    /**
+     * Set the shared preferences as defined in the settings activity.
+     * @param preferences
+     */
+    public void setPreferences(SharedPreferences preferences) {
+        this.preferences = preferences;
     }
 
 }

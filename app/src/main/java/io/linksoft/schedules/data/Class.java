@@ -25,8 +25,9 @@ public class Class implements Parcelable {
         JSONArray tutorArr = json.getJSONArray("docentnamen");
         String[] tutors = new String[tutorArr.length()];
 
-        for (int j = 0; j < tutors.length; j++)
+        for (int j = 0; j < tutors.length; j++) {
             tutors[j] = tutorArr.getString(j);
+        }
 
         this.id = json.getString("id");
         this.location = json.getString("lokaal");

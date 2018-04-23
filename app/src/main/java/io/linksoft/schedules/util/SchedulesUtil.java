@@ -24,7 +24,7 @@ public class SchedulesUtil {
         this.activity = activity;
         this.api = api;
 
-        cache = new ScheduleCache(activity);
+        cache = new ScheduleCache();
     }
 
     /**
@@ -69,8 +69,9 @@ public class SchedulesUtil {
      * @return Schedule
      */
     public Schedule get(String code) {
-        if (!has(code))
+        if (!has(code)) {
             return new Schedule("Unknown: ", "", true);
+        }
 
         return schedules.get(code);
     }
@@ -111,8 +112,9 @@ public class SchedulesUtil {
      * @return Should sync
      */
     public boolean shouldSync(String schedule) {
-        if (!FileUtil.fileExists(activity, ScheduleCache.FILE_NAME, FileUtil.TYPE_CACHE))
+        if (!FileUtil.fileExists(ScheduleCache.FILE_NAME, FileUtil.TYPE_CACHE)) {
             return true;
+        }
 
         return new Date().after(DateUtil.getDateByDayOffset(get(schedule).getSyncTime(), ScheduleCache.CACHE_DAYS));
     }
@@ -124,11 +126,16 @@ public class SchedulesUtil {
      * @return Syncing tasks successful created
      */
     public boolean syncAll() {
-        if (!NetUtil.hasNetworkConnection(activity)) return false;
+        if (!NetUtil.hasNetworkConnection(activity)) {
+            return false;
+        }
+
         clearCache();
 
         for (Map.Entry<String, Schedule> entry : schedules.entrySet()) {
-            if (!entry.getValue().isEnabled()) continue;
+            if (!entry.getValue().isEnabled()) {
+                continue;
+            }
 
             entry.getValue().setSynced(false);
             api.syncSchedule(entry.getValue());
@@ -146,7 +153,9 @@ public class SchedulesUtil {
         boolean isSynced = true;
 
         for (Map.Entry<String, Schedule> s : schedules.entrySet()) {
-            if (!s.getValue().isEnabled()) continue;
+            if (!s.getValue().isEnabled()) {
+                continue;
+            }
 
             if (!s.getValue().isSynced()) {
                 isSynced = false;
@@ -184,8 +193,9 @@ public class SchedulesUtil {
     public int getActiveSchedules() {
         int count = 0;
 
-        for (Map.Entry<String, Schedule> s : schedules.entrySet())
+        for (Map.Entry<String, Schedule> s : schedules.entrySet()) {
             if (s.getValue().isEnabled()) count++;
+        }
 
         return count;
     }

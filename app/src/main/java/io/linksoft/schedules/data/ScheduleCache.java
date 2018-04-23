@@ -1,7 +1,5 @@
 package io.linksoft.schedules.data;
 
-import android.app.Activity;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,11 +14,7 @@ public class ScheduleCache {
 
     private JSONObject schedules = new JSONObject();
 
-    private Activity activity;
-
-    public ScheduleCache(Activity activity) {
-        this.activity = activity;
-
+    public ScheduleCache() {
         load();
     }
 
@@ -32,8 +26,8 @@ public class ScheduleCache {
      */
     private boolean load() {
         try {
-            if (FileUtil.fileExists(activity, FILE_NAME, FileUtil.TYPE_CACHE)) {
-                schedules = new JSONObject(FileUtil.readFile(activity, FILE_NAME, FileUtil.TYPE_CACHE));
+            if (FileUtil.fileExists(FILE_NAME, FileUtil.TYPE_CACHE)) {
+                schedules = new JSONObject(FileUtil.readFile(FILE_NAME, FileUtil.TYPE_CACHE));
             } else {
                 schedules = new JSONObject();
             }
@@ -92,7 +86,7 @@ public class ScheduleCache {
 
         try {
             schedules.put(schedule.getCode(), json);
-            FileUtil.writeFile(activity, FILE_NAME, schedules.toString(), FileUtil.TYPE_CACHE);
+            FileUtil.writeFile(FILE_NAME, schedules.toString(), FileUtil.TYPE_CACHE);
         } catch (JSONException e) {
             e.printStackTrace();
             return false;
@@ -107,7 +101,7 @@ public class ScheduleCache {
      * @return Cache deleted successfully
      */
     public boolean clear() {
-        return FileUtil.deleteFile(activity, FILE_NAME, FileUtil.TYPE_CACHE);
+        return FileUtil.deleteFile(FILE_NAME, FileUtil.TYPE_CACHE);
     }
 
 }

@@ -9,10 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
+import io.linksoft.schedules.MainActivity;
 import io.linksoft.schedules.R;
 import io.linksoft.schedules.data.Class;
 import io.linksoft.schedules.data.DaySchedulesContainer;
@@ -42,19 +42,33 @@ public class DayViewPagerFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null)
-            day = getArguments().getParcelable(ARG_DAY);
+        if (getArguments() != null) {
+            try {
+                // When a user resumes the app after it was suspended, attempt to
+                // read the data from the session storage and start off where the
+                // user left.
+                day = getArguments().getParcelable(ARG_DAY);
+            } catch (Exception e) {
+                // If reading failed for some reason, don't bother to properly
+                // solve this issue. Just start the main activity again and let
+                // it reload everything from cache or whatever it likes to get
+                // the data from.
+                ((MainActivity) getActivity()).reload();
+            }
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pager_schedules, container, false);
-        if (day.getSchedules().isEmpty()) return view;
+        if (day.getSchedules().isEmpty()) {
+            return view;
+        }
 
         SectionedRecyclerViewAdapter sectionAdapter = new SectionedRecyclerViewAdapter();
-
-        for (Map.Entry<String, List<Class>> entry : day.getSchedules().entrySet())
+        for (Map.Entry<String, ArrayList<Class>> entry : day.getSchedules().entrySet()) {
             sectionAdapter.addSection(new ClassSection(entry.getKey(), new ArrayList<>(entry.getValue())));
+        }
 
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

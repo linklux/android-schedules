@@ -38,7 +38,9 @@ public class ManageDialogFragment extends BaseDialogFragment implements ManageIt
 
         for (Pair<Long, Schedule> pair : schedules) {
             // Skip the schedule if it will be deleted
-            if (schedulesDelete.containsKey(pair.second.getCode())) continue;
+            if (schedulesDelete.containsKey(pair.second.getCode())) {
+                continue;
+            }
 
             scheduleOrder += pair.second.getCode() + (i++ < schedules.size() - 1 ? "," : "");
         }
@@ -48,15 +50,17 @@ public class ManageDialogFragment extends BaseDialogFragment implements ManageIt
      * Write the schedule data to the settings file.
      */
     private void save() {
-        Settings settings = new Settings(getActivity());
+        Settings settings = new Settings();
 
         // Write all schedules to handle property updates
-        for (Pair<Long, Schedule> pair : schedules)
+        for (Pair<Long, Schedule> pair : schedules) {
             settings.writeSchedule(pair.second);
+        }
 
         // Delete inactive schedules if present
-        for (Schedule schedule : schedulesDelete.values())
+        for (Schedule schedule : schedulesDelete.values()) {
             settings.removeSchedule(schedule);
+        }
 
         // Write the schedule order string
         setScheduleOrder();
@@ -90,7 +94,9 @@ public class ManageDialogFragment extends BaseDialogFragment implements ManageIt
         dragListView.setDragListListener(new DragListView.DragListListenerAdapter() {
             @Override
             public void onItemDragEnded(int fromPosition, int toPosition) {
-                if (fromPosition == toPosition) return;
+                if (fromPosition == toPosition) {
+                    return;
+                }
 
                 setScheduleOrder();
             }

@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import io.linksoft.schedules.util.DateUtil;
@@ -16,9 +15,9 @@ public class DaySchedulesContainer implements Parcelable {
 
     private Date date;
 
-    private LinkedHashMap<String, List<Class>> schedules = new LinkedHashMap<>();
+    private LinkedHashMap<String, ArrayList<Class>> schedules = new LinkedHashMap<>();
 
-    public DaySchedulesContainer(Date date, List<Schedule> schedules) {
+    public DaySchedulesContainer(Date date, ArrayList<Schedule> schedules) {
         this.date = date;
 
         loadSchedules(schedules);
@@ -27,22 +26,27 @@ public class DaySchedulesContainer implements Parcelable {
     private DaySchedulesContainer(Parcel in) {
         date = new Date(in.readLong());
 
-        List<DayScheduleContainer> days = new ArrayList<>();
-        days = in.readArrayList(days.getClass().getClassLoader());
-
-        for (DayScheduleContainer day : days)
+        ArrayList<DayScheduleContainer> days = in.readArrayList(DayScheduleContainer.class.getClassLoader());
+        for (DayScheduleContainer day : days) {
             schedules.put(day.getCode(), day.getClasses());
+        }
     }
 
-    private void loadSchedules(List<Schedule> schedules) {
-        if (schedules == null || schedules.isEmpty()) return;
+    private void loadSchedules(ArrayList<Schedule> schedules) {
+        if (schedules == null || schedules.isEmpty()) {
+            return;
+        }
 
         for (Schedule schedule : schedules) {
-            if (this.schedules.containsKey(schedule.getCode())) continue;
-            List<Class> classes = new ArrayList<>();
+            if (this.schedules.containsKey(schedule.getCode())) {
+                continue;
+            }
 
+            ArrayList<Class> classes = new ArrayList<>();
             for (Class cls : schedule.getClasses()) {
-                if (!DateUtil.areDaysEqual(date, cls.getTimeStart())) continue;
+                if (!DateUtil.areDaysEqual(date, cls.getTimeStart())) {
+                    continue;
+                }
 
                 classes.add(cls);
             }
@@ -51,7 +55,7 @@ public class DaySchedulesContainer implements Parcelable {
         }
     }
 
-    public LinkedHashMap<String, List<Class>> getSchedules() {
+    public LinkedHashMap<String, ArrayList<Class>> getSchedules() {
         return schedules;
     }
 
@@ -70,10 +74,11 @@ public class DaySchedulesContainer implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        List<DayScheduleContainer> schedules = new ArrayList<>();
+        ArrayList<DayScheduleContainer> schedules = new ArrayList<>();
 
-        for (Map.Entry<String, List<Class>> entry : this.schedules.entrySet())
+        for (Map.Entry<String, ArrayList<Class>> entry : this.schedules.entrySet()) {
             schedules.add(new DayScheduleContainer(entry.getKey(), entry.getValue()));
+        }
 
         dest.writeLong(date.getTime());
         dest.writeList(schedules);

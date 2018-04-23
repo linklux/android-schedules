@@ -31,15 +31,18 @@ public class DayViewPagerAdapter extends ViewPagerAdapter {
         Date end = DateUtil.getWeekStart(new Date(), displayWeeks);
         ArrayList<Date> dates = DateUtil.getDateRange(start, end, true);
 
-        for (Date date : dates)
+        for (Date date : dates) {
             days.put(date.getTime(), new DaySchedulesContainer(date, activeSchedules));
+        }
     }
 
     private void setActiveSchedules() {
         activeSchedules.clear();
 
         for (Map.Entry<String, Schedule> schedule : schedules.entrySet()) {
-            if (!schedule.getValue().isEnabled()) continue;
+            if (!schedule.getValue().isEnabled()) {
+                continue;
+            }
 
             activeSchedules.add(schedule.getValue());
         }
@@ -65,8 +68,13 @@ public class DayViewPagerAdapter extends ViewPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if (days == null || position > days.size()) return "Unknown";
-        if (days.valueAt(position) == null) return "Unknown";
+        if (days == null || position > days.size()) {
+            return "Unknown";
+        }
+
+        if (days.valueAt(position) == null) {
+            return "Unknown";
+        }
 
         return days.valueAt(position).getDay();
     }

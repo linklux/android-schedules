@@ -34,7 +34,7 @@ public class AddDialogFragment extends BaseDialogFragment implements WindesheimA
             return;
         }
 
-        Settings settings = new Settings(getActivity());
+        Settings settings = new Settings();
         settings.writeSchedule(schedule);
         settings.save();
 

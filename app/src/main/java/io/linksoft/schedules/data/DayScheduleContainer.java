@@ -4,29 +4,27 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class DayScheduleContainer implements Parcelable {
 
     private String code;
-    private List<Class> classes;
+    private ArrayList<Class> classes;
 
-    public DayScheduleContainer(String code, List<Class> classes) {
+    public DayScheduleContainer(String code, ArrayList<Class> classes) {
         this.code = code;
         this.classes = classes;
     }
 
     private DayScheduleContainer(Parcel in) {
         code = in.readString();
-
-        this.classes = in.readArrayList(new ArrayList<Class>().getClass().getClassLoader());
+        classes = in.readArrayList(Class.class.getClassLoader());
     }
 
     public String getCode() {
         return code;
     }
 
-    public List<Class> getClasses() {
+    public ArrayList<Class> getClasses() {
         return classes;
     }
 

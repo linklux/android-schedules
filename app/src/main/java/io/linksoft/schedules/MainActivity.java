@@ -31,6 +31,7 @@ import io.linksoft.schedules.fragments.ManageDialogFragment;
 import io.linksoft.schedules.layouts.CustomSwipeRefreshLayout;
 import io.linksoft.schedules.net.WindesheimApi;
 import io.linksoft.schedules.util.DateUtil;
+import io.linksoft.schedules.util.FileUtil;
 import io.linksoft.schedules.util.SchedulesUtil;
 
 @SuppressWarnings("ConstantConditions")
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity
     /**
      * Simple activity reload.
      */
-    private void reload() {
+    public void reload() {
         Intent intent = getIntent();
 
         finish();
@@ -125,7 +126,10 @@ public class MainActivity extends AppCompatActivity
 
             pager.setAdapter(pagerAdapter);
 
-            if (activeView != VIEW_DAY) return;
+            if (activeView != VIEW_DAY) {
+                return;
+            }
+
             Date curDate = DateUtil.getStartOfDay(new Date());
             curDate = DateUtil.isWeekend(curDate) ? DateUtil.getWeekStart(curDate, 1) : curDate;
 
@@ -143,10 +147,15 @@ public class MainActivity extends AppCompatActivity
         // Initialize all settings with their default value as defined by the 'android:defaultValue' property
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
+        FileUtil.setNormalStorageFile(this.getFilesDir());
+        FileUtil.setCacheStorageFile(this.getCacheDir());
+
         WindesheimApi api = new WindesheimApi(this);
         api.setOnScheduleSyncedListener(this);
 
-        settings = new Settings(this);
+        settings = new Settings();
+        settings.setPreferences(PreferenceManager.getDefaultSharedPreferences(this));
+
         schedules = new SchedulesUtil(this, api);
 
         setContentView(R.layout.activity_main);
@@ -225,8 +234,9 @@ public class MainActivity extends AppCompatActivity
         settings.save();
 
         if (schedules.isAllSynced()) {
-            if (mSwipeRefreshLayout.isRefreshing())
+            if (mSwipeRefreshLayout.isRefreshing()) {
                 mSwipeRefreshLayout.setRefreshing(false);
+            }
 
             setPagerView();
         }
@@ -238,9 +248,11 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onPageSelected(int position) {
-        if (activeView != VIEW_DAY) return;
-        Date date = ((DayViewPagerFragment) pagerAdapter.getItem(position)).getDay().getDate();
+        if (activeView != VIEW_DAY) {
+            return;
+        }
 
+        Date date = ((DayViewPagerFragment) pagerAdapter.getItem(position)).getDay().getDate();
         getSupportActionBar().setTitle(DateUtil.getFormattedTime(date, DateFormat.LONG));
     }
 
