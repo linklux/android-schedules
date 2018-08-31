@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -14,9 +16,10 @@ import io.linksoft.schedules.data.Schedule;
 import io.linksoft.schedules.data.Settings;
 import io.linksoft.schedules.net.WindesheimApi;
 
-public class AddDialogFragment extends BaseDialogFragment implements WindesheimApi.OnScheduleCodeValidatedListener{
+public class AddDialogFragment extends BaseDialogFragment implements WindesheimApi.OnScheduleCodeValidatedListener, WindesheimApi.OnClassListSyncedListener {
 
     private WindesheimApi api;
+    private View v;
 
     /**
      * Validates a schedule.
@@ -47,16 +50,19 @@ public class AddDialogFragment extends BaseDialogFragment implements WindesheimA
 
         api = new WindesheimApi(getActivity());
         api.setOnScheduleCodeValidatedListener(this);
+        api.setOnClassListSyncedListener(this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_add_dialog, container, false);
+        v = inflater.inflate(R.layout.fragment_add_dialog, container, false);
 
-        final EditText code = (EditText) v.findViewById(R.id.add_dialog_class);
-        final EditText label = (EditText) v.findViewById(R.id.add_dialog_label);
-        final Button btnSubmit = (Button) v.findViewById(R.id.add_dialog_submit);
-        final Button btnCancel = (Button) v.findViewById(R.id.add_dialog_cancel);
+        api.fetchClassList();
+
+        final AutoCompleteTextView code = v.findViewById(R.id.add_dialog_class);
+        final EditText label = v.findViewById(R.id.add_dialog_label);
+        final Button btnSubmit = v.findViewById(R.id.add_dialog_submit);
+        final Button btnCancel = v.findViewById(R.id.add_dialog_cancel);
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,4 +90,16 @@ public class AddDialogFragment extends BaseDialogFragment implements WindesheimA
         return v;
     }
 
+    @Override
+    public void onClassListSynced(String[] list) {
+        if (list == null) {
+            Toast.makeText(getActivity().getApplicationContext(), "Failed to fetch class list", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this.getActivity(), R.layout.list_autocomplete_item, list);
+
+        AutoCompleteTextView code = v.findViewById(R.id.add_dialog_class);
+        code.setAdapter(adapter);
+    }
 }
