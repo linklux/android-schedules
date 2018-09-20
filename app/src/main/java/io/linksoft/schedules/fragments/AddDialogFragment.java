@@ -93,7 +93,8 @@ public class AddDialogFragment extends BaseDialogFragment implements WindesheimA
     @Override
     public void onClassListSynced(String[] list) {
         if (list == null) {
-            Toast.makeText(getActivity().getApplicationContext(), "Failed to fetch class list", Toast.LENGTH_SHORT).show();
+            System.out.println("Failed to fetch classes");
+            Toast.makeText(getActivity().getApplicationContext(), "Failed to fetch class list. This is most likely caused by a network disconnection.", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -101,5 +102,7 @@ public class AddDialogFragment extends BaseDialogFragment implements WindesheimA
 
         AutoCompleteTextView code = v.findViewById(R.id.add_dialog_class);
         code.setAdapter(adapter);
+
+        System.out.println("Successfully set classes");
     }
 }

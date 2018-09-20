@@ -151,7 +151,7 @@ public class WindesheimApi {
      * adding a schedule for example.
      */
     public void fetchClassList() {
-        makeRequest(getUrl(CLASS_LIST, null), new okhttp3.Callback() {
+        boolean success = makeRequest(getUrl(CLASS_LIST, null), new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
                 e.printStackTrace();
@@ -192,6 +192,11 @@ public class WindesheimApi {
                 }
             }
         });
+
+        // When there;s no connection, return immediately.
+        if (!success) {
+            classListListener.onClassListSynced(null);
+        }
     }
 
     public interface OnScheduleCodeValidatedListener {
