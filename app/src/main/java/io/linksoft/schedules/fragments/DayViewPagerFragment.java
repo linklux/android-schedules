@@ -43,16 +43,16 @@ public class DayViewPagerFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            try {
-                // When a user resumes the app after it was suspended, attempt to
-                // read the data from the session storage and start off where the
-                // user left.
-                day = getArguments().getParcelable(ARG_DAY);
-            } catch (Exception e) {
-                // If reading failed for some reason, don't bother to properly
-                // solve this issue. Just start the main activity again and let
-                // it reload everything from cache or whatever it likes to get
-                // the data from.
+            // When a user resumes the app after it was suspended, attempt to
+            // read the data from the session storage and start off where the
+            // user left.
+            day = getArguments().getParcelable(ARG_DAY);
+
+            // If reading failed for some reason, don't bother to properly
+            // solve this issue. Just start the main activity again and let
+            // it reload everything from cache or wherever it likes to get
+            // the data from.
+            if (day == null) {
                 ((MainActivity) getActivity()).reload();
             }
         }
@@ -61,7 +61,7 @@ public class DayViewPagerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_pager_schedules, container, false);
-        if (day.getSchedules().isEmpty()) {
+        if (day == null || day.getSchedules().isEmpty()) {
             return view;
         }
 
@@ -70,7 +70,7 @@ public class DayViewPagerFragment extends Fragment {
             sectionAdapter.addSection(new ClassSection(entry.getKey(), new ArrayList<>(entry.getValue())));
         }
 
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerview);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(sectionAdapter);
 
