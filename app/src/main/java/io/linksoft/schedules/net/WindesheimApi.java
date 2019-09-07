@@ -160,8 +160,19 @@ public class WindesheimApi {
             @Override
             public void onResponse(okhttp3.Call call, okhttp3.Response response) throws IOException {
                 try {
+                    // Validate the response body.
+                    if (response.body() == null) {
+                        classListListener.onClassListSynced(null);
+                        return;
+                    }
+
                     // Fetch the result and parse the JSON array response.
                     final String result = response.body().string();
+                    if (result == null) {
+                        classListListener.onClassListSynced(null);
+                        return;
+                    }
+
                     final JSONArray json = new JSONArray(result);
 
                     // Create a string array with with the capacity to contain all returned items.
